@@ -1,0 +1,1 @@
+{"mcpServers":{"axoreview":{"args":["<ABSOLUTE_PATH_TO_AXOREVIEW>/mcp-server.js"],"command":"node","env":{"AXOREVIEW_LLM":"mock"}}}}
