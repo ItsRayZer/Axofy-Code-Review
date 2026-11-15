@@ -117,6 +117,13 @@ SE), `lib/pipeline.js` (3-pass review), `mcp-server.js`, `bin/axoreview.js`,
 `server.js`. Tests: `npm test` in that folder (133 passed, 0 failed at
 last check — 116 suite + 17 MCP).
 
+## Review methods (`methods/` in the repo)
+
+- `methods/deep-reasoning.md` — **default line-by-line protocol.** Mental model first, then a verdict on every changed line. Read it before every review.
+- `methods/language-pitfalls.md` — **per-language checks** (JS/TS, React, Node, Python, Go, Rust, Java/Kotlin, C/C++, and more). Read it when the diff touches one of those languages/platforms.
+- `methods/functional-qa.md` — **test every element.** Inventory every UI/API element in the diff, test case per element type. Use when the change is user-facing or adds behaviour.
+- `methods/security-privacy-audit.md` — **security pass** (authorization/scope, threat model, scanner stack). Use when the review touches auth, data, secrets, or user input, and as a final pass before ship.
+
 ## What is NOT here (on purpose)
 
 No website, no app, no login, no GitHub App, no Vercel deploy — dropped

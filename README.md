@@ -342,6 +342,15 @@ Fixture `fixtures/sample-pr.diff` plants 3 bugs (SQL injection, off-by-one,
 insecure `eval`) — the test asserts all three are found with file:line +
 evidence.
 
+## Review methods (`methods/`)
+
+Four playbooks the agent reads before reviewing — see `agent-pack/SKILL.md` for when each applies:
+
+- `methods/deep-reasoning.md` — default line-by-line protocol (mental model, then a verdict per changed line).
+- `methods/language-pitfalls.md` — per-language/platform checks (JS/TS, React, Node, Python, Go, Rust, Java/Kotlin, C/C++, and more).
+- `methods/functional-qa.md` — test every element (inventory + test case per element type).
+- `methods/security-privacy-audit.md` — security pass (authorization/scope, threat model, scanner stack).
+
 ## What is NOT yet built
 
 IDE extension, Engineer agent, SSO/RBAC/audit, Postgres/pgvector
