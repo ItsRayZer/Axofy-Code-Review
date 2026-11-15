@@ -106,7 +106,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.q
 
 // ---- Hero carousel: 4 tabs, auto-rotate ~60s, Pause/Resume, progress ----
 const HERO_COPY = [
-  { eyebrow: 'AGENTIC CHANGE MANAGEMENT — FREE', h: 'The future isn\'t writing code.<br><span class="accent">It\'s reviewing it.</span>', sub: 'Axofy Code Review reads every pull request the way a senior reviewer would: it traces what the change actually touches, checks it against your guidelines and linked issues, and posts a plain-language summary with inline comments you can apply in one click. Every feature included. $0. No seat billing, no card, no file cap.' },
+  { eyebrow: 'CODE REVIEW — FREE', h: 'The future isn\'t writing code.<br><span class="accent">It\'s reviewing it.</span>', sub: 'Axofy Code Review reads every pull request the way a senior reviewer would: it traces what the change actually touches, checks it against your guidelines and linked issues, and posts a plain-language summary with inline comments you can apply in one click. Every feature included. Free. No paid tiers, no card, no file cap.' },
   { eyebrow: 'TRIAGE — FREE', h: 'The future isn\'t writing code.<br><span class="accent">It\'s prioritizing it.</span>', sub: 'A prioritised queue of open PRs across your repos, ordered by risk and effort. A small docs fix never jumps ahead of a security change again.' },
   { eyebrow: 'EXPLAIN — FREE', h: 'The future isn\'t writing code.<br><span class="accent">It\'s understanding it.</span>', sub: 'Change Stack groups files by module, shows moved code, traces blast radius, and draws the architecture impact — so a 2,000-line PR reads in layers, not as one wall of diff.' },
   { eyebrow: 'SECURE — FREE', h: 'The future isn\'t writing code.<br><span class="accent">It\'s securing it.</span>', sub: 'Secrets, injection, dependency and infrastructure checks on every PR, plus whole-repo Deep Scan. Quality gates fail the check run when a critical finding is present.' },
@@ -149,7 +149,7 @@ document.querySelectorAll('[data-cg]').forEach((b) => {
   });
 });
 
-// ---- Pricing Annual/Monthly toggle (CodeRabbit prices switch, ours stays $0) ----
+// ---- Pricing Annual/Monthly toggle (CodeRabbit prices switch, ours stays free) ----
 const CR_PRICES = { annual: { essentials: '$24', team: '$48', advanced: '$72', note: 'annual billing' }, monthly: { essentials: '$30', team: '$60', advanced: '$90', note: 'monthly billing' } };
 document.querySelectorAll('[data-bill]').forEach((b) => {
   b.addEventListener('click', () => {
@@ -159,7 +159,7 @@ document.querySelectorAll('[data-bill]').forEach((b) => {
     const note = document.querySelector('[data-cr-note]');
     if (note) note.textContent = p.note;
     const bn = document.querySelector('[data-bill-note]');
-    if (bn) bn.textContent = b.dataset.bill === 'annual' ? 'annual or monthly, it is still $0' : 'monthly billing, still $0';
+    if (bn) bn.textContent = b.dataset.bill === 'annual' ? 'annual or monthly, it is still free' : 'monthly billing, still free';
   });
 });
 

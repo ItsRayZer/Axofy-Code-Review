@@ -1,11 +1,10 @@
-# Axofy Code Review (AxoReview) — a free CodeRabbit-style AI code reviewer
+# Axofy Code Review (AxoReview)
 
-**Free forever. No paywall, no tiers, no seat billing, no hourly caps, no file cap.**
-Planned home: https://codereview.axofy.shop (not live yet — deploy only on RayZer's tap).
-Same method, same output format as [CodeRabbit](https://www.coderabbit.ai) — plus CodeAnt's best features (quality gates, bulk autofix, plain-English custom rules, Steps of Reproduction, real-time learnings) — built from
-the research in `~/workspace/research_notes/coderabbit-ai-research-20261115-0443/report.md`
-(§3 pipeline, §6 replica architecture). GitHub is fully live; GitLab /
-Bitbucket / Azure DevOps are adapter-ready (see "Supported hosts").
+A free code-review tool, in the style of CodeRabbit. Free. No paid tiers.
+
+It reviews pull requests the way a senior reviewer would — summary, walkthrough, inline comments with fixes you can apply in one click — and it borrows CodeAnt's better ideas too: quality gates, bulk autofix, plain-English custom rules, steps of reproduction, and learnings from your feedback. The method follows CodeRabbit's public docs and an independent teardown of its pipeline. GitHub is fully live; GitLab, Bitbucket and Azure DevOps are adapter-ready (see "Supported hosts").
+
+Planned home: https://codereview.axofy.shop (not live yet).
 
 ## Landing page
 
@@ -45,9 +44,9 @@ the review tool itself at `#app`. The demo shows the real fixture review
   Quick = deterministic checks only; standard adds taint, breaking changes,
   migrations, dependency risk, performance, a11y/i18n and blast radius;
   deep adds architecture impact on every PR, docs drift and test gaps —
-  all deterministic, even without an LLM key.
+  all deterministic, even without a model key.
 - Language-aware deterministic checks for 20 languages (see table below);
-  the LLM review is language-agnostic and runs on all of them.
+  the model review is language-agnostic and runs on all of them.
 - `.axoreview.yaml` with the same sections as `.coderabbit.yaml` (`general`, `reviews`, `chat`,
   `knowledge_base`, `tools`, `path_filters`, `path_instructions`).
 - Slop detection, pre-merge checks (built-in + custom natural-language),
@@ -57,34 +56,25 @@ the review tool itself at `#app`. The demo shows the real fixture review
   + SAST + dependency + IaC), Learnings + knowledge base, CLI
   (`axoreview review --base main`).
 
-## How free works — BYOM: Axofy pays $0
+## How free works
 
-**Axofy pays $0 — your model, your key, your bill (free tiers / local = $0).**
-There is no Axofy LLM account to pay for: every review runs on a model the
-user brings. Free cloud tiers (NVIDIA Nemotron, Groq, OpenRouter `:free`,
-Gemini AI Studio) cost the user $0; local models (Ollama, LM Studio) cost
-$0 and never leave the user's machine; a custom OpenAI-compatible endpoint
-costs whatever that endpoint charges the user — Axofy adds $0. A key sent
-with a request is used for that request only: never stored server-side,
-never logged, never put in a cache key. With no key at all the server runs
-in mock/deterministic mode and says `needs-llm` honestly. `GET /api/providers`
-lists every provider with its cost to Axofy ($0) and to the user.
+There is no Axofy model account to pay for: every review runs on a model the user brings. Bring your own API key — a free cloud tier, or a model running on your own machine. Free cloud tiers (NVIDIA Nemotron, Groq, OpenRouter `:free`, Gemini AI Studio) cost the user nothing; local models (Ollama, LM Studio) cost nothing and never leave the user's machine; a custom OpenAI-compatible endpoint costs whatever that endpoint charges the user. Axofy charges nothing either way. A key sent with a request is used for that request only: never stored server-side, never logged, never put in a cache key. With no key at all the server runs in mock/deterministic mode and says `needs-llm` honestly. `GET /api/providers` lists every provider with its cost to Axofy (none) and to the user.
 
-CodeRabbit pays for frontier LLMs on every review, Cloud Run workers, and a
+### Providers
+
+Works with NVIDIA, Groq, OpenRouter, Gemini, Ollama, and LM Studio — plus any OpenAI-compatible endpoint you point it at.
+
+CodeRabbit pays for frontier models on every review, Cloud Run workers, and a
 team — so it charges $24–$72/user/month. CodeAnt charges $24/dev/mo with no
 free tier. Axofy Code Review avoids those costs:
 
 | Cost CodeRabbit pays | What Axofy Code Review does instead | Tradeoff |
 |---|---|---|
-| Frontier LLM per review | Free-tier LLMs: NVIDIA Nemotron 3 Ultra (primary), Groq free, OpenRouter `:free` models, Gemini AI Studio free — BYOK | Free-tier rate limits (~40 rpm on NVIDIA); smaller/weaker models than frontier on some tasks; you bring the key |
+| Frontier model per review | Free-tier models: NVIDIA Nemotron 3 Ultra (primary), Groq free, OpenRouter `:free` models, Gemini AI Studio free — bring your own key | Free-tier rate limits (~40 rpm on NVIDIA); smaller models than frontier on some tasks; you bring the key |
 | Cloud Run + sandbox fleet | Your server / Vercel Hobby free tier (1 serverless function) + local `git clone` sandbox | No managed scale; big repos clone slower; Vercel Hobby limits apply |
 | Managed data + team | GitHub free + self-hosted JSON stores (learnings/KB/cache) | No SSO/RBAC/audit; Postgres/pgvector is phase 2 |
 
-**Free-tier rate limits are the real tradeoff.** Axofy Code Review stretches the free
-tier further than CodeRabbit's paid meter does: 7-day response caching (hash of
-diff+config+profile), per-file LLM caching, 30s push debounce, incremental-only
-review (already-reviewed lines are never re-reviewed), cheap-model compression
-before the review pass, and a judge pass that kills noise before posting.
+Free-tier rate limits are the real tradeoff. A few things stretch the free tier further: 7-day response caching (hash of diff+config+profile), per-file model caching, 30s push debounce, incremental-only review (already-reviewed lines are never re-reviewed), cheap-model compression before the review pass, and a judge pass that kills noise before posting.
 Nothing is ever charged — there is no billing code at all.
 
 ## Supported languages (deterministic checks, all live)
@@ -110,7 +100,7 @@ migrations, deps, N+1, blast radius). Fixtures in `fixtures/` cover JS,
 Python, Go, Java, PHP, SQL and Rust, each with a planted bug the tests
 assert is caught.
 
-## Supported hosts (honest status)
+## Supported hosts
 
 | Host | Status | What works |
 |---|---|---|
@@ -123,14 +113,14 @@ assert is caught.
 
 ## More than CodeRabbit
 
-- **Free** — $0, no tiers, no seat billing, no hourly cap, no file cap.
-- **Model choice shown** — every review names its model/provider; switch with `LLM_PROVIDER`.
-- **Self-host is the default** — no 500-seat enterprise gate.
-- **Deep mode on every PR** — architecture impact, blast radius, docs drift
-  and test gaps run deterministically, even without an LLM key.
-- **20 languages, deterministic** — not LLM-only for less-common languages.
+- Free — no tiers, no seat billing, no hourly cap, no file cap.
+- Every review names its model and provider; switch with `LLM_PROVIDER`.
+- Self-host is the default — no 500-seat enterprise gate.
+- Deep mode runs on every PR: architecture impact, blast radius, docs drift
+  and test gaps, deterministically, even without a model key.
+- 20 languages with deterministic checks, not model-only for less-common languages.
 
-## Same method as CodeRabbit (report §3)
+## How a review runs
 
 ```
 GitHub App install → PR webhook → queue (dedupe by repo/PR/head SHA,
@@ -141,27 +131,21 @@ never runs untrusted repo code) → 20+ deterministic tools in parallel
 (definitions / call sites / imports, blast-radius tracing) → 10-15
 context points (diff, guidelines AGENTS.md/CLAUDE.md, linked Jira/Linear
 issue, past PRs, CI logs, learnings) → cheap-model compression first →
-planner task graph → agentic investigation via ripgrep (ast-grep when
-installed) → 3-pass LLM review (per-file → summary → judge) →
+planner task graph → targeted investigation via ripgrep (ast-grep when
+installed) → 3-pass model review (per-file → summary → judge) →
 post summary + inline comments + check run
 ```
 
-## Agent-first (15 Nov 2026 pivot — the website/app plan is dropped)
+## Use it from your terminal or editor
 
-> **People are lazy.** There is no website to open, no app to install, no
-> login. AxoReview is now **agent-first only**: a portable skill, a CLI, an
-> MCP server, and a localhost HTTP API. The engine in this folder is
-> unchanged; do not deploy it, do not work on the landing/desktop/Vercel/
-> GitHub App unless RayZer says resume.
+There is no website to open, no app to install, no login. AxoReview is a portable skill, a CLI, an MCP server, and a localhost HTTP API — pick whichever fits how you already work.
 
-**The 1-step use** — paste this to your agent (Claude Code, Cursor,
-ChatGPT, Gemini, Copilot, any AI) with your diff / PR:
+**The 1-step use** — paste this with your diff / PR:
 
 > Review this diff line by line like CodeRabbit, SE mode on, using AxoReview
 
 **Four ways in:**
-1. **Copy the skill** — `agent-pack/SKILL.md` into any agent (Claude Code,
-   Cursor, Windsurf, Codex, Gemini CLI…); `agent-pack/AGENTS.md` /
+1. **Copy the skill** — `agent-pack/SKILL.md` into your editor's skills folder; `agent-pack/AGENTS.md` /
    `.cursorrules` snippets for repos. One command / one file copy.
 2. **CLI** — `node bin/axoreview.js review --file path/to.diff --line-by-line --se`
    (or `--base main`). Works with no server: falls back to the local engine.
@@ -184,13 +168,13 @@ A–D, and code smells. Tests: `npm test` = 133 passed, 0 failed
 
 ```bash
 cd ~/workspace/axoreview
-cp .env.example .env   # add ONE free key: NVIDIA_API_KEY (or Groq/OpenRouter/Gemini)
+cp .env.example .env   # add one free key: NVIDIA_API_KEY (or Groq/OpenRouter/Gemini)
 node server.js         # http://localhost:3000  (no npm install — zero dependencies)
 ```
 
 Then open the UI, paste a PR URL or a diff, pick a profile, and Run review.
 No key at all? The server still works in **mock mode**: deterministic checks,
-Triage, Deep Scan, Autofix and the changelog all run; LLM features return a
+Triage, Deep Scan, Autofix and the changelog all run; model features return a
 clear `needs-llm` note instead of faked output. The response always says
 which mode it ran in (`llmMode: direct | vault | mock`).
 
@@ -206,7 +190,7 @@ node bin/axoreview.js review --base main --profile chill
 
 | Var | Purpose |
 |---|---|
-| `NVIDIA_API_KEY` | Primary LLM (free NVIDIA NIM endpoint, Nemotron 3 Ultra) |
+| `NVIDIA_API_KEY` | Primary model (free NVIDIA NIM endpoint, Nemotron 3 Ultra) |
 | `LLM_PROVIDER` | `nvidia` (default) \| `groq` \| `openrouter` \| `gemini` |
 | `GROQ_API_KEY` / `OPENROUTER_API_KEY` / `GEMINI_API_KEY` | Fallback free providers |
 | `LLM_MODEL` / `LLM_BASE_URL` / `LLM_API_KEY` | Generic provider overrides |
@@ -215,8 +199,8 @@ node bin/axoreview.js review --base main --profile chill
 | `GITHUB_WEBHOOK_SECRET` | Webhook HMAC verification |
 | `PORT` | Server port (default 3000) |
 | `AXOREVIEW_LLM=mock` | Force mock mode (deterministic checks only) |
-| `OLLAMA` / `LMSTUDIO` | Local BYOM: set `LLM_PROVIDER=ollama` (http://localhost:11434) or `lmstudio` (http://localhost:1234) — no key, $0 |
-| `LLM_PROVIDER=custom` | BYOM custom endpoint: `LLM_BASE_URL` + `LLM_MODEL` + `LLM_API_KEY` (yours) |
+| `OLLAMA` / `LMSTUDIO` | Local models: set `LLM_PROVIDER=ollama` (http://localhost:11434) or `lmstudio` (http://localhost:1234) — no key, no bill |
+| `LLM_PROVIDER=custom` | Custom endpoint: `LLM_BASE_URL` + `LLM_MODEL` + `LLM_API_KEY` (yours) |
 
 Local dev can also use the vault helper (`scripts/nemotron_via_vault.py`),
 which attaches the registered NVIDIA credential without ever exposing the key.
@@ -240,7 +224,7 @@ which attaches the registered NVIDIA credential without ever exposing the key.
 
 | Endpoint | What it does |
 |---|---|
-| `GET /health` | Status, LLM mode, GitHub App configured? |
+| `GET /health` | Status, model mode, GitHub App configured? |
 | `GET /sample.diff` | The fixture diff used by the landing demo and "Load sample diff" |
 | `POST /api/review` `{prUrl, profile?, post?}` | Review a PR (optionally post it) |
 | `POST /api/review-diff` `{diff, profile?, depth?, previousDiff?, configYaml?}` | Review a pasted diff; `previousDiff` = incremental-only; `depth` = quick\|standard\|deep |
@@ -248,19 +232,19 @@ which attaches the registered NVIDIA credential without ever exposing the key.
 | `POST /webhook/github` | GitHub webhooks (HMAC-verified) |
 | `POST /api/slop` `{diff, prBody?, prTitle?}` | Slop score |
 | `POST /api/autofix` `{diff, findings?}` | Safe-fix patch (manual items listed) |
-| `POST /api/finishing` `{diff, kind: tests\|docstrings}` | Needs LLM, else `needs-llm` |
+| `POST /api/finishing` `{diff, kind: tests\|docstrings}` | Needs a model, else `needs-llm` |
 | `POST /api/post-merge` `{diff, version?}` | Changelog draft |
 | `GET /api/triage?repo=o/r` | Open PRs scored by risk/effort |
 | `POST /api/explain` `{prUrl\|diff}` | Change Stack, semantic diff, blast radius, arch impact |
 | `POST /api/deep-scan` `{repo, ref?}` | Whole-repo deterministic scan |
-| `POST /api/chat` `{question, diff?\|prUrl?}` | Ask about a diff (needs LLM) |
+| `POST /api/chat` `{question, diff?\|prUrl?}` | Ask about a diff (needs a model) |
 | `GET/POST /api/learnings`, `GET/POST /api/kb` | Learnings + knowledge base |
-| `GET /api/providers` | BYOM provider table: cost to Axofy ($0) + cost to user + key needed? + local? |
-| `POST /api/providers/test` `{provider, model?, baseUrl?, apiKey?}` | Test a BYOM config (key used once, never stored) |
+| `GET /api/providers` | Provider table: cost to Axofy (none) + cost to user + key needed? + local? |
+| `POST /api/providers/test` `{provider, model?, baseUrl?, apiKey?}` | Test a provider config (key used once, never stored) |
 | `POST /api/gates` `{findings, configYaml?}` | Evaluate quality gates (pass/fail + reasons) |
 | `POST /api/autofix/bulk` `{diff, findings?, maxFiles?}` | Bulk autofix: all safe fixes in one patch, cap 200 files |
 | `POST /api/learnings/feedback` `{title, file, line, source?, accepted, repo?}` | Real-time learning: accepted=true reinforces, accepted=false suppresses similar findings |
-| `POST /api/review-diff` / `POST /api/review` | Now also accept `byom: {provider, model?, baseUrl?, apiKey?}` per request |
+| `POST /api/review-diff` / `POST /api/review` | Now also accept a per-request key override, `byom: {provider, model?, baseUrl?, apiKey?}` |
 | `POST /api/review-jobs` `{diff, profile?, depth?, byom?}` | Async review: returns 202 + `jobId`; poll `GET /api/review-jobs/:id` until `status: done` |
 | `GET /api/review-jobs/:id` | Poll an async job: `queued` → `running` → `done` (with `result`) or `error` |
 
@@ -268,37 +252,37 @@ which attaches the registered NVIDIA credential without ever exposing the key.
 
 | CodeRabbit feature | Axofy Code Review status |
 |---|---|
-| PR summary + walkthrough + Mermaid diagram + effort + labels/reviewers + linked-issue assessment | **Done** — same format, summary injected under `@axoreview summary` marker |
-| Inline comments, severity/category, effort, suggestion block, Prompt for Coding Agents | **Done** |
-| Incremental + full review, 30s debounce, dedupe by repo/PR/head SHA, cancel superseded | **Done** |
-| @bot chat + commands (review, full review, pause, resume, summary, resolve, configuration, help, generate docstrings, generate sequence diagram, approve) | **Done** (resolve/approve/configuration need the GitHub App) |
-| Profiles quiet/chill/assertive | **Done** |
-| `.coderabbit.yaml` sections (general, reviews, chat, knowledge_base, tools, path_filters, path_instructions) | **Done** as `.axoreview.yaml` |
-| 1-click fix / Autofix | **Done** — safe auto-fixes only; risky ones listed as manual |
-| Slop detection | **Done** (deterministic heuristics) |
-| Pre-merge checks (built-in + custom NL) | **Done** (LLM-evaluated; built-in checks run in mock too) |
-| Finishing touches (unit tests, docstrings) | **Done** (needs LLM key) |
-| Post-merge actions (changelog draft) | **Done** (deterministic draft) |
-| Triage queue | **Done** (deterministic scoring, $0) |
-| Explain (Change Stack, semantic diff, blast radius, architecture impact) | **Done** (arch impact needs LLM; rest deterministic) |
-| Secure (secrets, SAST, deps, IaC) + Deep Scan | **Done** (deterministic whole-repo scan) |
-| Learnings + knowledge base (guidelines, Jira/Linear paste, MCP note) | **Done** (JSON store; keyword match, not embeddings) |
-| IDE extension / CLI | **CLI done** (`bin/axoreview.js`); IDE extension **phase 2** |
+| PR summary + walkthrough + Mermaid diagram + effort + labels/reviewers + linked-issue assessment | Done — same format, summary injected under `@axoreview summary` marker |
+| Inline comments, severity/category, effort, suggestion block, Prompt for Coding Agents | Done |
+| Incremental + full review, 30s debounce, dedupe by repo/PR/head SHA, cancel superseded | Done |
+| @bot chat + commands (review, full review, pause, resume, summary, resolve, configuration, help, generate docstrings, generate sequence diagram, approve) | Done (resolve/approve/configuration need the GitHub App) |
+| Profiles quiet/chill/assertive | Done |
+| `.coderabbit.yaml` sections (general, reviews, chat, knowledge_base, tools, path_filters, path_instructions) | Done as `.axoreview.yaml` |
+| 1-click fix / Autofix | Done — safe auto-fixes only; risky ones listed as manual |
+| Slop detection | Done (deterministic heuristics) |
+| Pre-merge checks (built-in + custom NL) | Done (model-evaluated; built-in checks run in mock too) |
+| Finishing touches (unit tests, docstrings) | Done (needs a model key) |
+| Post-merge actions (changelog draft) | Done (deterministic draft) |
+| Triage queue | Done (deterministic scoring) |
+| Explain (Change Stack, semantic diff, blast radius, architecture impact) | Done (arch impact needs a model; rest deterministic) |
+| Secure (secrets, SAST, deps, IaC) + Deep Scan | Done (deterministic whole-repo scan) |
+| Learnings + knowledge base (guidelines, Jira/Linear paste, MCP note) | Done (JSON store; keyword match, not embeddings) |
+| IDE extension / CLI | CLI done (`bin/axoreview.js`); IDE extension phase 2 |
 | Multi-host (GitLab, Bitbucket, Azure) | **Adapter-ready** — webhook parsing + docs in `lib/hosts.js`, `GET /api/hosts`, 501 not-configured webhooks; GitHub live |
-| Engineer agent / cloud coding agent | **Phase 2** |
-| SSO / RBAC / audit logs / API | **Phase 2** |
-| Postgres/pgvector learnings | **Phase 2** (JSON file now) |
-| Self-hosting at enterprise scale | **Better-free** — self-host is the default; no 500-seat gate |
-| Quality gates (CodeAnt) | **Done** — `quality_gates` in `.axoreview.yaml`, block on critical/secrets/high/major-cap/tests; Check Run reflects the gate |
-| Bulk autofix (CodeAnt) | **Done** — `POST /api/autofix/bulk`, all safe fixes in one patch, cap 200 files, manual list separate |
-| Plain-English custom rules (CodeAnt) | **Done** — `custom_rules` in `.axoreview.yaml` + UI editor, deterministic match + LLM-enforced |
-| Steps of Reproduction (CodeAnt) | **Done** — every finding carries `repro` (inputs, execution path, expected vs actual) |
-| Real-time learnings from feedback (CodeAnt) | **Done** — `POST /api/learnings/feedback`; rejected findings suppress similar ones |
-| Bring your own model (BYOM) | **Done** — NVIDIA/Groq/OpenRouter/Gemini free tiers + Ollama/LM Studio local + custom endpoint; Axofy pays $0 |
-| First-run checklist + demo PR + quota meter (CodeRabbit gap) | **Done** — in-app 4-step checklist, one-click demo PR, live limit meter (Axofy: none) |
-| Pricing | **Better-free** — $0, no tiers, no caps; free-tier LLM rate limits are the only limit |
+| Engineer agent / cloud coding agent | Phase 2 |
+| SSO / RBAC / audit logs / API | Phase 2 |
+| Postgres/pgvector learnings | Phase 2 (JSON file now) |
+| Self-hosting at enterprise scale | Free — self-host is the default; no 500-seat gate |
+| Quality gates (CodeAnt) | Done — `quality_gates` in `.axoreview.yaml`, block on critical/secrets/high/major-cap/tests; Check Run reflects the gate |
+| Bulk autofix (CodeAnt) | Done — `POST /api/autofix/bulk`, all safe fixes in one patch, cap 200 files, manual list separate |
+| Plain-English custom rules (CodeAnt) | Done — `custom_rules` in `.axoreview.yaml` + UI editor, deterministic match + model-enforced |
+| Steps of Reproduction (CodeAnt) | Done — every finding carries `repro` (inputs, execution path, expected vs actual) |
+| Real-time learnings from feedback (CodeAnt) | Done — `POST /api/learnings/feedback`; rejected findings suppress similar ones |
+| Bring your own model key | Done — NVIDIA/Groq/OpenRouter/Gemini free tiers + Ollama/LM Studio local + custom endpoint; Axofy pays nothing |
+| First-run checklist + demo PR + quota meter | Done — in-app 4-step checklist, one-click demo PR, live limit meter (Axofy: none) |
+| Pricing | Free — no tiers, no caps; the provider's free-tier rate limits are the only limit |
 
-## Review techniques baked into the prompts (`lib/review-methods.js`)
+## Review techniques (`lib/review-methods.js`)
 
 Line-by-line, cross-file / blast-radius tracing, data-flow, control-flow,
 security (OWASP Top 10, secrets, injection, auth), performance (N+1, loops,
@@ -327,15 +311,15 @@ it. Set env vars in the Vercel dashboard; never commit keys.
   the 202 response, so jobs there are best-effort. Do not rely on them on
   Vercel for large reviews.
 - **Live site:** https://codereview.axofy.shop (after DNS CNAME
-  `codereview` → `cname.vercel-dns.com`). Default LLM mode is mock
-  (deterministic checks); LLM reviews use the caller's own BYOM key per
-  request — Axofy pays $0.
+  `codereview` → `cname.vercel-dns.com`). Default mode is mock
+  (deterministic checks); model reviews use the caller's own key per
+  request — Axofy pays nothing.
 
 ## Tests
 
 ```bash
-npm test            # mock LLM: planted-bug fixture, autofix, incremental, cache, queue, webhook HMAC
-npm run test:real   # real LLM via vault helper / NVIDIA_API_KEY
+npm test            # mock model: planted-bug fixture, autofix, incremental, cache, queue, webhook HMAC
+npm run test:real   # real model via vault helper / NVIDIA_API_KEY
 ```
 
 Fixture `fixtures/sample-pr.diff` plants 3 bugs (SQL injection, off-by-one,
@@ -344,7 +328,7 @@ evidence.
 
 ## Review methods (`methods/`)
 
-Four playbooks the agent reads before reviewing — see `agent-pack/SKILL.md` for when each applies:
+Four method notes the review follows — see `agent-pack/SKILL.md` for when each applies:
 
 - `methods/deep-reasoning.md` — default line-by-line protocol (mental model, then a verdict per changed line).
 - `methods/language-pitfalls.md` — per-language/platform checks (JS/TS, React, Node, Python, Go, Rust, Java/Kotlin, C/C++, and more).

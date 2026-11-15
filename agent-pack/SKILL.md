@@ -1,6 +1,6 @@
 ---
 name: axoreview
-description: Free, maximum-depth agentic code review. Use this skill whenever the user asks to review, audit, check, verify, or sanity-check code, a PR, diff, commit, branch, or file; asks "is this safe to merge", "find bugs", "what could break", "line by line", "deep review", or "security review"; wants a PR summary, walkthrough, diagram, release notes, fixes, tests, or docstrings for changed code; or mentions CodeRabbit or AI code review. Drives the agent through intent modeling, line-by-line execution reasoning, cross-file impact tracing, adversarial analysis, and self-falsification so findings are proven, not guessed. Also runs whole-app mode: inventories every page, route, button, form, input, API endpoint, and function; tests each one; audits security and privacy with real scanners; fixes what it finds; and re-tests until a verified, evidence-backed pass/fail report is produced. Trigger on "test everything", "check all buttons", "make sure it works", "is it secure", "is it private", "audit my app/site", "fix everything", or "harden this". Works with any model (BYOM, local or hosted). Not affiliated with CodeRabbit.
+description: Free, deep code review. Use this skill whenever the user asks to review, audit, check, verify, or sanity-check code, a PR, diff, commit, branch, or file; asks "is this safe to merge", "find bugs", "what could break", "line by line", "deep review", or "security review"; wants a PR summary, walkthrough, diagram, release notes, fixes, tests, or docstrings for changed code; or mentions CodeRabbit or code review. Works through intent modeling, line-by-line execution reasoning, cross-file impact tracing, adversarial analysis, and self-falsification so findings are proven, not guessed. Also runs whole-app mode: inventories every page, route, button, form, input, API endpoint, and function; tests each one; audits security and privacy with real scanners; fixes what it finds; and re-tests until a verified, evidence-backed pass/fail report is produced. Trigger on "test everything", "check all buttons", "make sure it works", "is it secure", "is it private", "audit my app/site", "fix everything", or "harden this". Works with any model — bring your own API key, local or hosted. Independent project, not affiliated with CodeRabbit.
 ---
 
 # AxoReview v2: deep, evidence-driven code review
@@ -15,9 +15,23 @@ For `qa`, `audit app`, `harden`, or `privacy`, also read
 `references/agent-ops.md`. Helper scripts live in `scripts/`:
 `preflight.sh` (detect tools and stack; run first) and `crawl.mjs`
 (Playwright crawler that inventories and click-tests a running app). Both are
-read-only on your code; the crawler only touches the app URL you give it.
+read-only on your code. The crawler only touches the app URL you give it, but
+it click-tests that app: it can create records or send email, so prefer
+staging or a fresh database, or pass `--no-click`.
 Read the matching section of `references/language-pitfalls.md` for every
-language in the change. Both are short and worth the tokens.
+language in the change. The method files and the helper scripts are short and
+worth the tokens.
+
+Install: copy this whole folder — `SKILL.md` plus its sibling `references/`
+and `scripts/` — into your editor's skills directory (for example
+`~/.claude/skills/axoreview/`). Copying `SKILL.md` alone breaks the
+`references/` and `scripts/` reads above.
+
+If the AxoReview engine is present (a cloned `axoreview/` repo), prefer its
+deterministic tools over following this skill by hand: CLI
+`bin/axoreview.js`, MCP server `mcp-server.js`, or HTTP `server.js`
+(localhost:3000). They run the same line-by-line checks, gates, and autofix,
+with no model key needed for deterministic mode.
 
 ## 0. Core principles
 
@@ -47,7 +61,7 @@ No command = `review`. Plain English maps to these.
 |---|---|
 | `review` | Incremental review of unreviewed changes |
 | `full review` | Ignore prior state, review everything |
-| `deep review` | Exhaustive depth (§3), all lenses, adversarial pass |
+| `deep review` | Deep depth (§3), all lenses, adversarial pass |
 | `audit <path>` | Review existing code (no diff) for latent defects |
 | `security` | Threat model + security-only deep pass |
 | `summary` / `diagram` | Summary, walkthrough, effort, risk, labels, Mermaid |
@@ -120,15 +134,18 @@ omission.
 ## 2b. Whole-app mode (`qa`, `audit app`, `harden`)
 
 Turns review into verified engineering: find, fix, prove. Follow this loop.
-Details for steps 0 and 5 to 7 are in `references/agent-ops.md`.
+Details for steps 0 and 5 to 9 are in `references/agent-ops.md`: step 0 →
+§1–§5; step 5 → §6; step 6 → §7–§8; step 7 → §3, §5, §9; step 8 → §9, §11;
+step 9 → §11, §12.
 
 0. **Preflight, safety, baseline.** Run `scripts/preflight.sh`; tell the user
    the capability level (L0 read-only, L1 shell, L2 browser, L3 staging +
    accounts) and what it limits. Work on a branch `axoreview/<date>` with a
    checkpoint commit before each fix; never touch production or push without
-   consent. Run install, build, tests, and scanners on untouched code and
-   save `.axoreview/baseline.json` so pre-existing failures are separated
-   from regressions. Boot the app and record how in `.axoreview/run.md`.
+   consent. Ask first, then run install, build, tests, and scanners on
+   untouched code and save `.axoreview/baseline.json` so pre-existing failures
+   are separated from regressions. Boot the app and record how in
+   `.axoreview/run.md`.
    Define the 3 to 7 critical user journeys and test them first and last.
 1. **Inventory (completeness first).** Build a machine-checkable list of
    every user-reachable and developer-reachable element: routes/pages, nav
@@ -160,18 +177,18 @@ Details for steps 0 and 5 to 7 are in `references/agent-ops.md`.
    break the fix. Revert each fix in a scratch copy to confirm its regression
    test fails without it. Check test quality with mutation or property tests
    on critical modules. An item is `FIXED` only when this agrees.
-6b. **Re-inventory and diff.** Re-crawl; confirm no new untested elements
+7. **Re-inventory and diff.** Re-crawl; confirm no new untested elements
    appeared, nothing regressed against the baseline, and the critical
    journeys still pass on a clean checkout and fresh database.
-6c. **Persist state.** Update `.axoreview/` (inventory, backlog, baseline,
+8. **Persist state.** Update `.axoreview/` (inventory, backlog, baseline,
    progress, report) after every item so long runs resume after a context
    reset. Emit `report.json` (and SARIF if the user uses code scanning).
-7. **Assurance report.** Output the table below, never a bare "all good".
+9. **Assurance report.** Output the table below, never a bare "all good".
 
 ```
 ## Assurance report
 Scope: <repo/commit/URL, env, date>  Model: <name>  Tools run / not run: <lists>
-Inventory: 142 elements · Tested: 131 · PASS 124 · FIXED 11 · BLOCKED 3 · UNVERIFIED 11
+Inventory: 142 elements · Tested: 131 · PASS 117 · FIXED 11 · BLOCKED 3 · UNVERIFIED 11
 Security: critical 0 · high 0 · medium 2 (accepted: reason) · scanners: semgrep, gitleaks, trivy, zap
 Privacy: PII flows mapped 9 · third parties 4 · gaps 2
 Residual risk and out-of-scope: <what this audit cannot prove>
@@ -196,7 +213,6 @@ configuration, vendor behavior, and legal compliance need human review.
 | `quick` | Diff only, deterministic checks, obvious bugs | Tiny change, tight budget |
 | `standard` | + callers, tests, config, self-falsification | Default |
 | `deep` | + full adversarial pass, threat model, docs/test gaps, architecture | Auth, payments, data, public API, migrations |
-| `exhaustive` | + every changed line reasoned individually, execution of tests/repros, second independent pass | Release gates, security audits, "check everything" |
 
 Spend effort where risk is. Never spend equal effort on a README typo and an
 auth change. Weak or small models: use `quick`/`standard`, shorter chunks, one
@@ -275,7 +291,7 @@ and git history), related issues/PRs, and `--poem`.
 
 1. **Security:** injection, authN/authZ, IDOR, SSRF, XSS/CSRF, traversal,
    crypto, secrets, deserialization, supply chain, CI/CD injection, IaC,
-   containers, privacy/PII, LLM-specific risks (prompt injection, unsafe tool
+   containers, privacy/PII, model-specific risks (prompt injection, unsafe tool
    use, output executed as code).
 2. **Correctness:** logic, types, null, boundaries, coercion, money/time math,
    error paths, retries, idempotency, resource lifecycles.
@@ -298,6 +314,16 @@ and git history), related issues/PRs, and `--poem`.
 12. **AI-generated code smells:** hallucinated imports/APIs, plausible but
     wrong logic, stale copy-paste, over-engineering. Verify every import and
     API exists in the pinned version.
+
+## 6b. SE mode (software-engineering judgement)
+
+SE mode is on by default. Every line verdict also gets SE notes: SOLID,
+DRY / KISS / YAGNI, clean code, naming, complexity, design-pattern misuse,
+TDD / testability, API and backward-compat, DB / migration safety, OWASP
+security, performance, concurrency, and error handling. The review ends with
+an SE summary: score 0–100, grade A (90+), B (75+), C (60+), D (below 60),
+code smells, and a ship-it / needs-changes line. Disable it with
+`reviews.se: false` in `.axoreview.yaml`, or `--no-se` on the CLI.
 
 ## 7. Pre-merge checks (gates)
 
@@ -336,7 +362,9 @@ ESLint, Biome, `tsc`, Ruff, mypy, Bandit, golangci-lint, `go vet`, Clippy,
 RuboCop, Brakeman, PHPStan, detekt, SwiftLint, ShellCheck, Hadolint,
 actionlint, tflint, Checkov, Trivy, Semgrep, Gitleaks, OSV-Scanner, `npm audit`,
 `pip-audit`, `cargo audit`. Missing tool: list under "Not run" with an install
-hint. Do not install or use the network without permission.
+hint. Do not install or use the network without permission (the §2b step 0
+baseline install is the one exception: ask first, then run it once on
+untouched code).
 
 ## 11. Learnings
 
@@ -348,56 +376,91 @@ personal data.
 ## 12. State and incremental review
 
 Keep `.axoreview/state.json` (reviewed commit SHA, file hashes, open and
-resolved finding IDs, model, config hash) when the filesystem allows. Review
-only new or changed lines, re-verify open findings, and never repeat a fixed
-or dismissed one. Without state, say the review is full.
+resolved finding IDs, model, config hash) when the filesystem allows. Add
+`.axoreview/` to the target repo's `.gitignore` so audit state never gets
+committed. Review only new or changed lines, re-verify open findings, and
+never repeat a fixed or dismissed one. Without state, say the review is full.
 
 ## 13. Getting the change
 
 Local: `git diff <base>...HEAD`, `git diff --staged`, `git show <sha>`.
 GitHub: `gh pr view/diff <n>`; GitLab: `glab mr`; Azure: `az repos pr`;
-Bitbucket: REST API with the user's token. Pasted code: review as given and
+Bitbucket: `curl -u <user>:<app-password> https://api.bitbucket.org/2.0/repositories/<workspace>/<repo>/pullrequests/<id>/diff`. Pasted code: review as given and
 state that surrounding context was unavailable. Never post comments, push,
 merge, label, or change remote state without explicit consent.
 
-## 14. Model strategy (BYOM)
+## 14. Model strategy (bring your own key)
 
 Name the model in every review. Cheap model: triage, summaries, compression.
 Strongest available: security, cross-file impact, adversarial pass, judge. No
 model: deterministic checks and tools only, labeled `mode: deterministic`.
 Large changes: chunk by risk, review chunks independently, then run one
-cross-chunk impact pass. Cache by (file hash, config, model). Keys are
+cross-chunk impact pass. Cache by (diff hash, config, profile, model), 7 days,
+in the local JSON store (`data/cache.json`, or `$AXOREVIEW_CACHE_FILE`). Keys are
 per-request only: never stored, logged, echoed, or cached.
 
 ## 15. Config: `.axoreview.yaml`
 
 ```yaml
+general:
+  language: en-US
+  tone: neutral
 reviews:
   profile: chill              # quiet | chill | assertive
-  depth: standard             # quick | standard | deep | exhaustive
-  incremental: true
+  depth: standard             # quick | standard | deep
+  se: true                    # SE mode on by default; false disables it
   path_filters: ["**/*", "!**/node_modules/**", "!**/dist/**", "!**/*.lock"]
   path_instructions:
-    - { glob: "src/auth/**", text: "Security-critical. Verify every authz path." }
-    - { glob: "**/*.test.*", text: "Check assertions are meaningful, not flaky." }
+    - glob: "src/auth/**"
+      text: "Security-critical. Verify every authz path."
+    - glob: "**/*.test.*"
+      text: "Check assertions are meaningful, not flaky."
   summary: true
   walkthrough: true
-  diagrams: true
-  coverage_ledger: true
-  related_issues: true
-  suggest_reviewers: true
-  suggest_labels: true
-  poem: false
-  tools: { eslint: true, ruff: true, semgrep: true, gitleaks: true }
-  pre_merge_checks:
+  labels: true
+  reviewers: true
+  auto_approvals:
+    enabled: false
+  token_budget_chars: 24000
+  cache_enabled: true         # 7-day response cache; false disables it
+  tools:
+    eslint:
+      enabled: true
+    ruff:
+      enabled: true
+    semgrep:
+      enabled: true
+    gitleaks:
+      enabled: true
+  pre_merge_checks:           # list of {name, prompt, severity}
+    - name: "No debug logging"
+      prompt: "Is there console.log/print in prod paths? Fail if any."
+      severity: error
+    - name: "Rate limiting"
+      prompt: "Are new public endpoints rate limited? Fail if not."
+      severity: warning
+  quality_gates:              # booleans only; 'warn' is ignored
     block_on_critical: true
     block_on_secrets: true
-    require_tests: warn
-    custom:
-      - { name: "No debug logging", rule: "No console.log/print in prod paths." }
-      - { name: "Rate limiting", rule: "New public endpoints must be rate limited." }
-knowledge: { use_repo_guidance_files: true, learnings: true }
+    block_on_high: false
+    require_tests: false
+  custom_rules:               # plain-English strings, enforced deterministically
+    - "Never use console.log in production code — use the logger instead."
+    - "All new API endpoints must check authentication."
+chat:
+  auto_reply: true
+knowledge_base:
+  opt_out: false
+  code_guidelines:
+    filePatterns: ["**/AGENTS.md", "**/CLAUDE.md"]
 ```
+
+The engine reads only the keys above, in block style (its YAML subset
+parser handles inline `[...]` lists but not inline `{...}` maps — an inline
+map is silently ignored). `diagrams`, `coverage_ledger`, `related_issues`,
+`suggest_labels`, `poem`, and `incremental` are output options for the agent,
+not engine config, so setting them here does nothing. `knowledge:` is not a
+key; use `knowledge_base:`.
 
 Precedence: explicit user request > `.axoreview.yaml` > repo guidance files >
 defaults.

@@ -1,8 +1,8 @@
 # AxoReview — agent instructions (paste into your repo's AGENTS.md)
 
 Review every pull request and every local diff with AxoReview before
-merging. AxoReview is a free, agent-first code reviewer (CodeRabbit method,
-$0, BYOM — your own model, Axofy pays $0).
+merging. AxoReview is a free code reviewer (CodeRabbit method). Reviews run on
+your own model key; Axofy charges nothing.
 
 ## How to review (default: line-by-line, SE on)
 
@@ -32,8 +32,8 @@ $0, BYOM — your own model, Axofy pays $0).
 
 - Cite file:line + the exact evidence line for every finding. Never claim
   an API or behaviour you cannot see in the diff/context.
-- No key = deterministic mode, labelled `llmMode: mock`. Never fake an
-  LLM verdict, a benchmark, a stat, or a customer.
+- No key = deterministic mode, labelled `llmMode: mock`. Never fake a
+  model verdict, a benchmark, a stat, or a customer.
 - Keys are per-request only — never stored, never logged, never in chat.
 - Autofix is safe-only (off-by-one, remove debug lines, single-line
   fixes). Secrets, SQLi, eval, multi-line fixes are manual-only.

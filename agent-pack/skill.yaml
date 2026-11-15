@@ -1,3 +1,3 @@
 name: axoreview
-version: 1.0.0
-description: AxoReview — free agentic code review, agent-first. Line-by-line Rabbit check mode + SE mode, CodeRabbit method, BYOM ($0 to Axofy). No website, no login.
+version: 2.0.0
+description: AxoReview — free code review. Line-by-line Rabbit check mode + SE mode, CodeRabbit method. Bring your own API key. No website, no login.
