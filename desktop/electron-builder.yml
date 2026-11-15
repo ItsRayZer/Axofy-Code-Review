@@ -1,0 +1,54 @@
+# electron-builder config — Axofy Code Review (Windows)
+# Builds the .exe installer on a Windows host (GitHub Actions windows-latest).
+# Cross-building NSIS on Linux needs Wine, which is NOT available on the dev
+# VM — see README.md. Never fake an installer: if the build host cannot
+# produce a real .exe, say so and use the GitHub Actions workflow instead.
+appId: com.axofy.codereview
+productName: Axofy Code Review
+copyright: Copyright © 2026 Axofy
+directories:
+  output: dist
+  buildResources: assets
+files:
+  - main.js
+  - preload.js
+  - server-launcher.js
+  - update-check.js
+  - settings-store.js
+  - settings.html
+  - assets/**/*
+  - package.json
+# The review server + UI live one folder up; copy them into the app package
+# under resources/axoreview (main.js resolves this when app.isPackaged).
+extraResources:
+  - from: ../server.js
+    to: axoreview/server.js
+  - from: ../lib
+    to: axoreview/lib
+  - from: ../public
+    to: axoreview/public
+  - from: ../fixtures
+    to: axoreview/fixtures
+  - from: ../.axoreview.yaml
+    to: axoreview/.axoreview.yaml
+asar: true
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: assets/icon.ico
+  # No code signing yet (needs a paid certificate) — Windows SmartScreen will
+  # warn on first install. This is stated honestly in the README.
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Axofy Code Review
+  artifactName: Axofy-Code-Review-Setup-${version}.${ext}
+portable:
+  artifactName: Axofy-Code-Review-Portable-${version}.${ext}
