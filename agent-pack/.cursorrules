@@ -1,0 +1,27 @@
+// AxoReview — Cursor rules (paste into your repo's .cursorrules)
+// Free, agent-first code review (CodeRabbit method, $0, BYOM).
+// Full skill: agent-pack/SKILL.md — portable version of
+// ~/workspace/custom-skills/axoreview/SKILL.md
+
+// REVIEW RULES — apply to every diff / PR before merging:
+// 1. Review LINE BY LINE: every changed line gets a verdict —
+//    ok / nitpick / minor / major / critical — with file:line, the exact
+//    evidence line, a fix, and Steps of Reproduction. Never summary-only.
+// 2. SE MODE ON: check every line against SOLID, DRY/KISS/YAGNI, clean
+//    code, naming, complexity, design-pattern misuse, TDD/testability,
+//    API/backward-compat, DB/migration safety, OWASP security,
+//    performance, concurrency, error handling. Report the SE score 0-100,
+//    grade A-D, and code smells.
+// 3. Cite file:line + evidence for every finding. Never claim an API or
+//    behaviour you cannot see in the diff. If unsure, say so — do not guess.
+// 4. Block on critical findings and failed quality gates. A human merges.
+// 5. No key = deterministic mode (llmMode: mock). Never fake an LLM verdict.
+// 6. Keys are per-request only — never stored, never logged, never in chat.
+// 7. Autofix is safe-only: off-by-one, remove debug lines, single-line
+//    fixes. Secrets, SQLi, eval, multi-line fixes are manual-only.
+//
+// HOW TO RUN (pick one):
+//   CLI:  node <path-to-axoreview>/bin/axoreview.js review --file diff.txt --line-by-line --se
+//   MCP:  line_by_line tool on the AxoReview MCP server (node <path-to-axoreview>/mcp-server.js)
+//   HTTP: POST http://localhost:3000/api/review-line-by-line {diff}
+//   Prompt: "Review this diff line by line like CodeRabbit, SE mode on, using AxoReview"
