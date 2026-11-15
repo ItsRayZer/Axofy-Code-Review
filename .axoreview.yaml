@@ -1,0 +1,66 @@
+# .axoreview.yaml — Axofy Code Review repo config.
+# Same sections as CodeRabbit's .coderabbit.yaml (general, reviews, chat,
+# knowledge_base), plus Axofy Code Review's free-tier efficiency knobs
+# (token_budget_chars, cache_enabled). Copy to a repo root.
+general:
+  language: en-US
+  tone: neutral
+
+reviews:
+  profile: chill # quiet | chill | assertive
+  depth: standard # quick | standard | deep — deep adds architecture impact, docs drift, test gaps on every PR
+  # Glob filters; "!" excludes. Also drives sparse-checkout of the sandbox clone.
+  path_filters:
+    - "**/*.js"
+    - "**/*.ts"
+    - "**/*.py"
+    - "!**/*.min.js"
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+  path_instructions:
+    - glob: "src/auth/**"
+      text: "Pay extra attention to authentication and authorisation in this directory."
+  summary: true
+  walkthrough: true
+  labels: true
+  reviewers: true
+  auto_approvals:
+    enabled: false
+  # Token budget cap (chars of context per file review). Lower = cheaper.
+  token_budget_chars: 24000
+  # Response cache (7-day TTL). Set false to disable.
+  cache_enabled: true
+  tools:
+    secret-aws-key: { enabled: true }
+    sql-injection: { enabled: true }
+    insecure-eval: { enabled: true }
+    console-log: { enabled: true }
+  pre_merge_checks:
+    - name: tests-added
+      prompt: "Does this PR add or update tests for the new behaviour? Fail if a non-trivial behaviour change has no test."
+      severity: warning
+    - name: no-secrets
+      prompt: "Are there any secrets, tokens or credentials in the diff? Fail if any are present."
+      severity: error
+  # Quality gates (CodeAnt-style, free): block merge on critical/secrets.
+  quality_gates:
+    block_on_critical: true
+    block_on_secrets: true
+    block_on_high: false
+    # max_major: 5
+    require_tests: false
+  # Plain-English custom rules (CodeAnt-style): matched deterministically
+  # and enforced by the LLM. A rule can also be a /regex/ (case-insensitive).
+  custom_rules:
+    - "Never use console.log in production code — use the logger instead."
+    - "All new API endpoints must check authentication."
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  code_guidelines:
+    filePatterns:
+      - "**/AGENTS.md"
+      - "**/CLAUDE.md"
