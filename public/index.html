@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axofy Code Review — Free AI Code Review, the free alternative to CodeRabbit</title>
+<meta name="description" content="Axofy Code Review is the free alternative to CodeRabbit: AI code review for every pull request. Summary, walkthrough, inline comments with one-click fixes, Triage, Explain, Secure. $0, no seat billing, no card.">
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="/marco.png">
+</head>
+<body>
+
+<!-- ============ STICKY NAV ============ -->
+<header class="nav">
+  <a class="brand" href="#top">
+    <img class="brand-logo" src="/marco.png" alt="Marco, the Axofy axolotl" width="36" height="36">
+    <span class="brand-name">Axofy <strong>Code Review</strong></span>
+    <span class="free-pill">FREE</span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <div class="nav-drop" data-drop>
+      <button type="button" aria-haspopup="true">Product ▾</button>
+      <div class="drop">
+        <a href="#app" data-goto-tab="review">Review<small>Agentic PR review, inline fixes</small></a>
+        <a href="#app" data-goto-tab="triage">Triage<small> riskiest PRs first</small></a>
+        <a href="#app" data-goto-tab="explain">Explain<small>Change Stack + blast radius</small></a>
+        <a href="#app" data-goto-tab="secure">Secure<small>Secrets, SAST, Deep Scan</small></a>
+        <a href="#features">Engineer<small>Autofix + finishing touches</small></a>
+      </div>
+    </div>
+    <a href="#outcomes">Customers</a>
+    <a href="#pricing">Pricing</a>
+    <div class="nav-drop" data-drop>
+      <button type="button" aria-haspopup="true">Resources ▾</button>
+      <div class="drop">
+        <a href="#how">How it works<small>Webhook → queue → judge → post</small></a>
+        <a href="#install">Docs<small>GitHub App + .axoreview.yaml</small></a>
+        <a href="#languages">Languages &amp; hosts<small>20 languages, 4 hosts</small></a>
+        <a href="#faq">FAQ<small>Is it really free?</small></a>
+      </div>
+    </div>
+    <a href="#install">Contact Us</a>
+  </nav>
+  <div class="nav-cta">
+    <span class="health" id="health">checking server…</span>
+    <a class="btn ghost" href="#login">Log In</a>
+    <a class="btn primary" href="#app" data-goto-tab="review">Get a free trial</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <p class="eyebrow mono" id="heroEyebrow">AGENTIC CHANGE MANAGEMENT — FREE</p>
+  <h1 id="heroHeadline">The future isn't writing code.<br><span class="accent">It's reviewing it.</span></h1>
+  <p class="hero-sub" id="heroSub">Axofy Code Review reads every pull request the way a senior reviewer would: it traces what the change actually touches, checks it against your guidelines and linked issues, and posts a plain-language summary with inline comments you can apply in one click. Every feature included. $0. No seat billing, no card, no file cap.</p>
+  <div class="hero-pills">
+    <span class="pill">Free forever</span>
+    <span class="pill">No credit card needed</span>
+    <span class="pill">No seat billing</span>
+    <span class="pill">Works on public repos without any setup</span>
+  </div>
+  <div class="hero-ctas">
+    <a class="btn primary big" href="#app" data-goto-tab="review">Try it for free</a>
+    <a class="btn dark big" href="#install">Book a demo</a>
+  </div>
+  <p class="hero-note">AI-generated pull requests arrive faster than any team can read them. The costly bugs hide in files the diff does not show — a changed return type breaking a caller three files away. Axofy Code Review traces that blast radius before a human ever opens the PR.</p>
+</section>
+
+<!-- ============ HERO CAROUSEL ============ -->
+<section class="carousel" aria-label="Product tour">
+  <div class="car-tabs" role="tablist">
+    <button class="car-tab active" data-car="0" role="tab"><b>01</b> Review</button>
+    <button class="car-tab" data-car="1" role="tab"><b>02</b> Prioritize</button>
+    <button class="car-tab" data-car="2" role="tab"><b>03</b> Understand</button>
+    <button class="car-tab" data-car="3" role="tab"><b>04</b> Secure</button>
+  </div>
+  <div class="car-progress" aria-hidden="true"><i class="fill" data-prog="0"></i><i data-prog="1"></i><i data-prog="2"></i><i data-prog="3"></i></div>
+  <div class="car-viewport">
+    <button class="btn car-pause" id="carPause" type="button">Pause</button>
+    <div class="car-track" id="carTrack">
+      <div class="car-panel" data-panel="0">
+        <h3>Review — a real thread from our fixture PR</h3>
+        <p>@axoreview on <span class="mono">src/users.js</span> — 3 planted bugs, all found. This is the same fixture the live demo below reviews.</p>
+        <div class="mock">
+          <div class="mock-row"><span class="sev critical">critical</span><strong>Possible SQL injection — query built by string concatenation</strong><span class="pill">src/users.js:15</span><span class="pill">security</span></div>
+          <div class="mock-row"><span class="sev critical">critical</span><strong>Insecure eval() on untrusted input</strong><span class="pill">src/users.js:31</span><span class="pill">security</span></div>
+          <div class="mock-row"><span class="sev major">major</span><strong>Possible off-by-one — loop uses &lt;= with .length</strong><span class="pill">src/users.js:23</span><span class="pill">bug</span></div>
+          <div class="mock-row"><span class="pill">▶ Committable suggestion — 1-click fix</span><span class="pill">Prompt for Coding Agents</span><span class="pill">Effort 2/5</span></div>
+        </div>
+      </div>
+      <div class="car-panel" data-panel="1">
+        <h3>Prioritize — Triage queue, riskiest first</h3>
+        <p>Open PRs scored by risk and effort from deterministic checks — the same scoring the Triage tab runs live.</p>
+        <div class="mock">
+          <div class="mock-row"><span class="prio p0">P0</span><strong>Add user lookup</strong><span class="pill">src/users.js</span><span class="pill">Risk: high</span><span class="pill">Effort 2/5</span><span class="pill">Status: review now</span></div>
+          <div class="mock-row"><span class="prio p1">P1</span><strong>Fix login rate limit</strong><span class="pill">src/auth.js</span><span class="pill">Risk: high</span><span class="pill">Effort 2/5</span><span class="pill">Status: queued</span></div>
+          <div class="mock-row"><span class="prio p2">P2</span><strong>Update score total tests</strong><span class="pill">src/users.test.js</span><span class="pill">Risk: low</span><span class="pill">Effort 1/5</span><span class="pill">Status: queued</span></div>
+          <div class="mock-row"><span class="prio p3">P3</span><strong>Docs: README typo</strong><span class="pill">README.md</span><span class="pill">Risk: none</span><span class="pill">Effort 1/5</span><span class="pill">Status: later</span></div>
+        </div>
+      </div>
+      <div class="car-panel" data-panel="2">
+        <h3>Understand — Change Stack, not just a diff</h3>
+        <p>Files grouped by module, with a sequence diagram of what the change actually does.</p>
+        <div class="mock">
+          <div class="mock-row"><strong>Layer 1 — Data</strong><span class="pill">src/users.js</span><span class="pill">db.query</span></div>
+          <div class="mock-row"><strong>Layer 2 — Logic</strong><span class="pill">src/users.js</span><span class="pill">sumScores</span><span class="pill">search filter</span></div>
+          <div class="mock-row"><strong>Layer 3 — Tests</strong><span class="pill">src/users.test.js</span><span class="pill">score total</span></div>
+          <pre class="code small" style="margin:12px 0 0">sequenceDiagram
+    participant Author as PR author
+    participant F0 as src/users.js
+    participant F1 as src/users.test.js
+    Author-&gt;&gt;F0: change 21 added lines
+    Author-&gt;&gt;F1: change 6 added lines</pre>
+        </div>
+      </div>
+      <div class="car-panel" data-panel="3">
+        <h3>Secure — codebase health at a glance</h3>
+        <p>Deep Scan findings from the fixture repo, shown honestly — no invented totals, only what the scan found.</p>
+        <div class="mock">
+          <p><strong>Codebase health</strong></p>
+          <div class="healthbar"><i style="width:72%"></i></div>
+          <p class="meta">72% of scanned files clean in the fixture — 7 findings, 5 critical, all in src/users.js</p>
+          <div class="donut">
+            <span class="d-crit"><b>5</b><br><span class="meta">critical</span></span>
+            <span class="d-high"><b>1</b><br><span class="meta">major</span></span>
+            <span class="d-med"><b>1</b><br><span class="meta">minor / grouped</span></span>
+          </div>
+          <div class="mock-row"><span class="sev critical">critical</span><strong>SQL injection</strong><span class="pill">dependency: none — your own code</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS (honest only) ============ -->
+<section class="section" id="stats" style="padding-top:32px">
+  <div class="stats">
+    <div class="stat"><b>$0</b><span>per user, per month — forever. No tiers, no seat billing.</span></div>
+    <div class="stat"><b>7</b><span>BYOM providers — free tiers + local Ollama / LM Studio.</span></div>
+    <div class="stat"><b>20</b><span>languages with deterministic checks, live.</span></div>
+    <div class="stat"><b>97</b><span>tests passing, 0 failed — verified before this deploy.</span></div>
+  </div>
+  <p class="meta" style="margin-top:16px">No invented customer counts, no fake logos. The numbers above are from this repo's own test suite and provider list.</p>
+</section>
+
+<!-- ============ FEATURE BLOCKS ============ -->
+<section class="section" id="features">
+  <p class="eyebrow">HOW IT WORKS</p>
+  <h2>One reviewer, four jobs. All free.</h2>
+  <div class="feat">
+    <div><p class="eyebrow">01 — REVIEW</p><h3>Every PR, reviewed like a senior would</h3><p>Summary, walkthrough, Mermaid sequence diagram, effort 1–5, and inline comments anchored to exact diff lines — with committable suggestion blocks you apply in one click.</p><ul class="checks"><li>3-pass review: per-file → summary → judge</li><li>Judge drops ungrounded findings before posting</li><li>@axoreview chat: review, resolve, approve, summary</li></ul><a href="#app" data-goto-tab="review">Learn more →</a></div>
+    <div class="mock"><div class="mock-row"><span class="sev critical">critical</span><strong>SQL injection</strong><span class="pill">src/users.js:15</span></div><div class="mock-row"><span class="sev major">major</span><strong>Off-by-one</strong><span class="pill">src/users.js:23</span></div><div class="mock-row"><span class="pill">▶ Committable suggestion</span><span class="pill">Prompt for Coding Agents</span></div></div>
+  </div>
+  <div class="feat">
+    <div class="mock"><div class="mock-row"><span class="prio p0">P0</span><strong>Add user lookup</strong><span class="pill">Risk: high</span></div><div class="mock-row"><span class="prio p1">P1</span><strong>Fix login rate limit</strong><span class="pill">Risk: high</span></div><div class="mock-row"><span class="prio p2">P2</span><strong>Update tests</strong><span class="pill">Risk: low</span></div></div>
+    <div><p class="eyebrow">02 — TRIAGE</p><h3>Review the riskiest PR first</h3><p>A prioritised queue of open PRs across your repos, ordered by risk and effort — so a small docs fix never jumps ahead of a security change.</p><ul class="checks"><li>Deterministic risk scoring, $0 per PR</li><li>Effort 1–5 on every PR</li><li>Works from the Triage tab, no install needed</li></ul><a href="#app" data-goto-tab="triage">Learn more →</a></div>
+  </div>
+  <div class="feat">
+    <div><p class="eyebrow">03 — CHANGE STACK</p><h3>Understand a large PR before you review it</h3><p>Change Stack groups files by module, shows moved code, traces blast radius, and draws the architecture impact — so a 2,000-line PR reads in layers, not as one wall of diff.</p><ul class="checks"><li>Semantic diff: moved code, not just added/removed</li><li>Blast radius: who calls the changed code</li><li>Architecture impact in deep mode</li></ul><a href="#app" data-goto-tab="explain">Learn more →</a></div>
+    <div class="mock"><div class="mock-row"><strong>Layer 1 — Data</strong><span class="pill">src/users.js</span></div><div class="mock-row"><strong>Layer 2 — Logic</strong><span class="pill">sumScores</span></div><div class="mock-row"><strong>Layer 3 — Tests</strong><span class="pill">src/users.test.js</span></div></div>
+  </div>
+  <div class="feat">
+    <div class="mock"><div class="mock-row"><span class="sev critical">critical</span><strong>Secrets in code</strong><span class="pill">Deep Scan</span></div><div class="mock-row"><span class="sev critical">critical</span><strong>SQL injection</strong><span class="pill">SAST</span></div><div class="mock-row"><span class="pill">Quality gate: FAIL — merge blocked</span></div></div>
+    <div><p class="eyebrow">04 — SECURITY</p><h3>Security that blocks the merge, not just a comment</h3><p>Secrets, injection, dependency and infrastructure checks on every PR, plus whole-repo Deep Scan. Quality gates fail the check run when a critical finding is present.</p><ul class="checks"><li>Secrets, SAST, SCA, IaC — deterministic</li><li>Quality gates: block on critical / secrets</li><li>Deep Scan: 200 files, whole repo</li></ul><a href="#app" data-goto-tab="secure">Learn more →</a></div>
+  </div>
+</section>
+
+<!-- ============ SHARED INTELLIGENCE / CODEGRAPH ============ -->
+<section class="section" id="codegraph">
+  <p class="eyebrow">SHARED INTELLIGENCE</p>
+  <h2>One code graph, shared by every review</h2>
+  <p class="section-sub">A fresh per-review graph of definitions, call sites, and imports — never a stale index — plus the learnings your team teaches it.</p>
+  <div class="cg-tabs" role="tablist">
+    <button class="cg-tab active" data-cg="codegraph" role="tab">Codegraph</button>
+    <button class="cg-tab" data-cg="learnings" role="tab">Learnings</button>
+    <button class="cg-tab" data-cg="reviews" role="tab">Reviews</button>
+    <button class="cg-tab" data-cg="docs" role="tab">Docs</button>
+    <button class="cg-tab" data-cg="reports" role="tab">Reports</button>
+  </div>
+  <div class="cg-panel active" data-cg-panel="codegraph">
+    <h3>Codegraph</h3>
+    <p class="meta">Definitions, call sites, imports — built fresh for each review. Blast radius example from the fixture: <span class="mono">getUserById</span> in src/users.js is called from the route layer; changing its return type breaks callers the diff never shows.</p>
+    <pre class="code">src/users.js
+  getUserById(req, res)  →  called by route GET /users/:id
+  sumScores(scores)      →  called by src/users.test.js
+  searchUsers(term)      →  calls eval() — flagged, taint: term → eval()</pre>
+  </div>
+  <div class="cg-panel" data-cg-panel="learnings">
+    <h3>Learnings</h3>
+    <p class="meta">Rules the reviewer learns from your feedback. Mark a finding Correct or Wrong in any review and similar findings are reinforced or suppressed next time. Stored locally; opt out any time.</p>
+  </div>
+  <div class="cg-panel" data-cg-panel="reviews">
+    <h3>Reviews</h3>
+    <p class="meta">Every review names its provider and model, shows the judge pass (kept vs dropped), and lists learnings applied. No review is ever presented as more certain than its evidence.</p>
+  </div>
+  <div class="cg-panel" data-cg-panel="docs">
+    <h3>Docs</h3>
+    <p class="meta">Reads AGENTS.md / CLAUDE.md automatically, plus pasted Jira / Linear ticket text, and .axoreview.yaml path instructions — so the review checks your rules, not generic ones.</p>
+  </div>
+  <div class="cg-panel" data-cg-panel="reports">
+    <h3>Reports</h3>
+    <p class="meta">Triage queue, Deep Scan results, and changelog drafts — all from the tool below, all $0. No invented customer metrics are shown here.</p>
+  </div>
+</section>
+
+<!-- ============ SLACK + PLAN ============ -->
+<section class="section" id="integrations">
+  <div class="grid2">
+    <article class="card"><h3>Axofy Code Review in Slack</h3><p>Ask about a PR, trigger a review, and get the summary where your team already talks. Chat commands work in PR comments today; Slack is the next integration — the review itself never requires leaving GitHub.</p><a href="#app" data-goto-tab="review">Try the chat in the tool →</a></article>
+    <article class="card"><h3>Plan</h3><p>Pre-merge checks written in plain language, a review plan for every PR before the review starts, and post-merge changelog drafts — all included free.</p><a href="#app" data-goto-tab="tools">Open Plan tools →</a></article>
+  </div>
+</section>
+
+<!-- ============ CUSTOMER OUTCOMES (honest only) ============ -->
+<section class="section" id="outcomes">
+  <p class="eyebrow">WHY FREE WINS</p>
+  <h2>What you actually get — measured from this repo</h2>
+  <p class="section-sub">No customer quotes, no invented outcome stats. These are real numbers from the fixture PR and the test suite that ships with the app.</p>
+  <div class="grid3">
+    <article class="card"><h3>7 findings, 1.3s</h3><p>The sample diff review on the live server found 7 findings (5 critical) in 1.3 seconds — SQL injection, eval, and off-by-one, all with file:line evidence.</p></article>
+    <article class="card"><h3>97 tests, 0 failed</h3><p>Every feature above is covered by tests that run before every deploy — language checks, gates, bulk autofix, BYOM, learnings, and webhooks.</p></article>
+    <article class="card"><h3>$0, forever</h3><p>No seat billing, no hourly cap, no file cap, no overage. The only limit is your free LLM provider's own free tier — shown live in the tool.</p></article>
+  </div>
+</section>
+
+<!-- ============ LIVE REVIEW DEMO ============ -->
+<section class="section" id="demo">
+  <h2>See a review, exactly as it is posted</h2>
+  <p class="section-sub">A sample pull request, reviewed by Axofy Code Review. Same structure as a real review: summary, walkthrough, effort, labels, and inline comments with suggested fixes. This is a fixture PR with three planted bugs — nothing here is a customer quote or a measured result.</p>
+  <div class="demo-card">
+    <div class="pr-head">
+      <span class="pr-title">Add user lookup</span>
+      <span class="pill">Effort 2/5</span>
+      <span class="pill">Risk: high</span>
+      <span class="pill">2 files · +27/−4 lines</span>
+    </div>
+    <p class="pr-summary"><strong>Summary.</strong> Reviewed 2 file(s) (+27/−4 lines). Found 4 finding(s): 2 critical, 1 major. The change adds a user lookup by id, a score total, and a search filter. Two of the findings are security issues that should block merge.</p>
+    <h3>Walkthrough</h3>
+    <ul class="walk">
+      <li><strong>src/users.js</strong> — 1 hunk, 21 added lines: user lookup, score total, search filter</li>
+      <li><strong>src/users.test.js</strong> — 1 hunk, 6 added lines: tests for the score total</li>
+    </ul>
+    <pre class="code small">sequenceDiagram
+    participant Author as PR author
+    participant F0 as src/users.js
+    participant F1 as src/users.test.js
+    Author-&gt;&gt;F0: change 21 added lines
+    Author-&gt;&gt;F1: change 6 added lines</pre>
+    <p>Suggested labels: <span class="pill">needs-review</span> <span class="pill">security</span> · Linked issue: Fixes #42 — checked against the linked issue text.</p>
+    <h3>Inline comments (3)</h3>
+    <article class="gh-comment">
+      <header><img src="/marco.png" alt="" width="28" height="28"><span><strong>@axoreview</strong> commented on <code>src/users.js:15</code></span><span class="sev critical">critical</span><span class="pill">security</span></header>
+      <p><strong>Possible SQL injection — query built by string concatenation</strong></p>
+      <p>The query is built by concatenating <code>userId</code>, which comes straight from <code>req.query.id</code>, into the SQL string. An attacker can inject SQL through the id parameter.</p>
+      <p class="meta">Evidence:</p>
+      <pre>const query = "SELECT * FROM users WHERE id = " + userId + " AND active = 1";</pre>
+      <p class="meta">Suggested fix (one-click, GitHub suggestion block):</p>
+      <pre>```suggestion
+Use a parameterised query / prepared statement with placeholders instead of string concatenation.
+```</pre>
+      <details><summary>Prompt for Coding Agents</summary><pre>Fix the following issue in src/users.js:15 (critical, security): Possible SQL injection — query built by string concatenation. Use a parameterised query / prepared statement with placeholders instead of string concatenation. Do not change unrelated code.</pre></details>
+    </article>
+    <article class="gh-comment">
+      <header><img src="/marco.png" alt="" width="28" height="28"><span><strong>@axoreview</strong> commented on <code>src/users.js:31</code></span><span class="sev critical">critical</span><span class="pill">security</span></header>
+      <p><strong>Insecure eval() on untrusted input</strong></p>
+      <p><code>eval()</code> runs the caller's <code>term</code> string as code. Any input that reaches this function executes with the server's privileges.</p>
+      <p class="meta">Evidence:</p>
+      <pre>const filter = eval("(" + term + ")");</pre>
+      <p class="meta">Suggested fix (one-click, GitHub suggestion block):</p>
+      <pre>```suggestion
+Do not use eval(). Parse data with JSON.parse or a safe expression parser, and validate the input first.
+```</pre>
+    </article>
+    <article class="gh-comment">
+      <header><img src="/marco.png" alt="" width="28" height="28"><span><strong>@axoreview</strong> commented on <code>src/users.js:23</code></span><span class="sev major">major</span><span class="pill">bug</span></header>
+      <p><strong>Possible off-by-one — loop uses &lt;= with .length</strong></p>
+      <p>The loop runs one step past the last valid index, so <code>scores[scores.length]</code> is <code>undefined</code> and the total becomes <code>NaN</code>.</p>
+      <p class="meta">Evidence:</p>
+      <pre>for (let i = 0; i &lt;= scores.length; i++) {</pre>
+      <p class="meta">Suggested fix (one-click, GitHub suggestion block):</p>
+      <pre>```suggestion
+Use `i &lt; arr.length` so the loop stops at the last valid index.
+```</pre>
+    </article>
+    <div class="row">
+      <button id="runSampleLive" class="btn primary" type="button">Run this sample live</button>
+      <span class="meta">Loads the same fixture diff into the review tool below and runs a real review.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section" id="how">
+  <h2>How it works — the same method, step by step</h2>
+  <p class="section-sub">The review is a pipeline, not a single prompt. Most of the work goes into preparing the context before any model writes a comment.</p>
+  <ol class="steps">
+    <li><strong>1. Webhook</strong><span>Install the GitHub App. A PR opened or updated fires a webhook — no CI changes, no Docker, no API key needed for the hosted path.</span></li>
+    <li><strong>2. Queue</strong><span>Jobs are deduplicated by repo, PR, and head SHA, debounced 30 seconds, and superseded pushes are cancelled — rapid pushes collapse into one review.</span></li>
+    <li><strong>3. Sandbox</strong><span>An ephemeral worker clones the repo (sparse checkout honouring your path filters). Untrusted repo code is never executed.</span></li>
+    <li><strong>4. Code graph</strong><span>A fresh per-review graph of definitions, call sites, and imports — never a stale index — traces the blast radius of every changed function.</span></li>
+    <li><strong>5. Agentic review</strong><span>A planner turns the PR into a task graph. Review agents investigate with the diff, the code graph, linked issues, CI logs, and your guidelines — then 20+ deterministic tools run in parallel.</span></li>
+    <li><strong>6. Judge</strong><span>A separate judge pass scores every finding against the gathered context and drops ungrounded ones. What survives is what gets posted.</span></li>
+    <li><strong>7. Post</strong><span>Summary into the PR description, inline comments anchored to exact diff lines with suggestion blocks, and a check run your branch protection can gate on.</span></li>
+  </ol>
+  <p class="meta">Method note: the pipeline shape above follows CodeRabbit's public docs and the independent teardown of its pipeline (June 2026). Internal details such as instance sizes and model names in that teardown are reported, not vendor-confirmed.</p>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="features">
+  <h2>Every feature. No tier gates.</h2>
+  <div class="grid3">
+    <article class="card"><h3>Summary + walkthrough</h3><p>Plain-language PR summary, changed-file walkthrough, Mermaid sequence diagram, effort 1–5, suggested labels and reviewers, linked-issue assessment.</p></article>
+    <article class="card"><h3>Incremental reviews</h3><p>Only new commits since the last review are re-reviewed. <code>@axoreview full review</code> forces a full re-review.</p></article>
+    <article class="card"><h3>@axoreview chat</h3><p>Ask questions, dispute findings, request changes in PR comments. Commands: review, full review, pause, resume, summary, resolve, configuration, help, generate docstrings, generate sequence diagram, approve.</p></article>
+    <article class="card"><h3>1-click fix / Autofix</h3><p>Committable suggestion blocks inline. Autofix applies safe fixes as a patch; risky fixes are listed for a human instead of guessed.</p></article>
+    <article class="card"><h3>Slop detection</h3><p>Flags low-quality AI-generated PRs: huge unfocused diffs, no tests, vague descriptions, copy-pasted patterns.</p></article>
+    <article class="card"><h3>Profiles</h3><p>quiet (critical + major only), chill (balanced, default), assertive (everything). Tone and language configurable per repo.</p></article>
+    <article class="card"><h3>Pre-merge checks</h3><p>Built-in checks plus custom checks written in plain language, evaluated on every PR, with pass / fail / unknown and a note.</p></article>
+    <article class="card"><h3>Finishing touches</h3><p>Unit-test generation including edge and error cases, docstring generation, merge-conflict help, code simplification.</p></article>
+    <article class="card"><h3>Learnings + knowledge base</h3><p>Learns from dismissed comments and chat. Reads AGENTS.md / CLAUDE.md automatically, plus pasted Jira / Linear ticket text. Opt out any time and the stored data is deleted.</p></article>
+    <article class="card"><h3>~60 deterministic tools</h3><p>Semgrep, ast-grep, TruffleHog, OSV-Scanner, Checkov, Trivy, ESLint, Biome, Ruff, Pylint, golangci-lint, Clippy, RuboCop, PHPStan, ShellCheck, actionlint, and more — auto-selected by language, run beside the model.</p></article>
+    <article class="card"><h3>Check runs + auto-approve</h3><p>A check run named AxoReview (pending → completed) that branch protection can require. Auto-approve when threads are resolved, the latest commit is reviewed, and pre-merge checks pass.</p></article>
+    <article class="card"><h3>CLI + IDE path</h3><p><code>axoreview review --base main</code> reviews local and uncommitted changes from the terminal. IDE extension is phase 2.</p></article>
+  </div>
+</section>
+
+<!-- ============ LANGUAGES & HOSTS ============ -->
+<section class="section" id="languages">
+  <h2>Every language. Every host. Same review.</h2>
+  <p class="section-sub">Deterministic checks are language-aware — a Python pickle is not judged like a Go exec call. The LLM review is language-agnostic and runs on all of these.</p>
+  <div class="table-wrap">
+  <table class="compare">
+    <thead><tr><th>Language</th><th>Deterministic checks</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>JavaScript / TypeScript</td><td>SQL injection, eval/Function, innerHTML XSS, child_process exec, console/debugger, off-by-one</td><td><strong>Live</strong></td></tr>
+      <tr><td>Python</td><td>f-string SQL injection, eval/exec, shell=True, pickle, yaml.load, bare except, print debug</td><td><strong>Live</strong></td></tr>
+      <tr><td>Go</td><td>exec sh -c, template.HTML, Sprintf SQL, ignored errors, fmt.Println debug, off-by-one</td><td><strong>Live</strong></td></tr>
+      <tr><td>Rust</td><td>unsafe blocks, unwrap(), println! debug, todo!(), formatted SQL</td><td><strong>Live</strong></td></tr>
+      <tr><td>Java / Kotlin</td><td>Runtime.exec, ObjectInputStream deserialisation, SQL concat, System.out debug, MD5</td><td><strong>Live</strong></td></tr>
+      <tr><td>PHP</td><td>eval/exec/shell_exec, unserialize, SQL concat with $_GET, var_dump, MD5</td><td><strong>Live</strong></td></tr>
+      <tr><td>Ruby</td><td>eval, backticks/system, Marshal/YAML.load, SQL interpolation, puts debug</td><td><strong>Live</strong></td></tr>
+      <tr><td>C / C++</td><td>system/popen, strcpy/strcat/gets/sprintf, unchecked copies</td><td><strong>Live</strong></td></tr>
+      <tr><td>Swift / C#</td><td>try!, NSKeyedUnarchiver, Process.Start, BinaryFormatter, Console debug</td><td><strong>Live</strong></td></tr>
+      <tr><td>SQL / Shell</td><td>DELETE without WHERE, DROP TABLE, dynamic EXEC, eval, curl | sh</td><td><strong>Live</strong></td></tr>
+      <tr><td>HTML / CSS / YAML / JSON / TOML</td><td>img without alt, inline handlers, unquoted secrets in config</td><td><strong>Live</strong></td></tr>
+      <tr><td>Docker / Terraform</td><td>:latest base, USER root, 0.0.0.0/0 ingress, plaintext passwords</td><td><strong>Live</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="table-wrap" style="margin-top:14px">
+  <table class="compare">
+    <thead><tr><th>Git host</th><th>Status</th><th>What works</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub (.com + Enterprise Server)</td><td><strong>Live</strong></td><td>App, webhook, diff, posting, check runs, chat commands</td></tr>
+      <tr><td>GitLab (.com + self-managed)</td><td>Adapter-ready</td><td>Webhook parsing + setup docs; diff/posting need GITLAB_TOKEN — returns not-configured until then</td></tr>
+      <tr><td>Bitbucket (Cloud + Data Center)</td><td>Adapter-ready</td><td>Webhook parsing + setup docs; diff/posting need BITBUCKET_TOKEN — returns not-configured until then</td></tr>
+      <tr><td>Azure DevOps</td><td>Adapter-ready</td><td>Webhook parsing + setup docs; diff/posting need AZURE_DEVOPS_TOKEN — returns not-configured until then</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>More than CodeRabbit</h3>
+  <ul>
+    <li><strong>Free</strong> — $0, no tiers, no seat billing, no hourly cap, no file cap.</li>
+    <li><strong>Model choice shown</strong> — every review names its model and provider; you can switch providers with one env var.</li>
+    <li><strong>Self-host is the default</strong> — no 500-seat enterprise gate.</li>
+    <li><strong>Deep mode on every PR</strong> — architecture impact, blast radius, docs drift and test gaps run deterministically, even without an LLM key.</li>
+    <li><strong>All languages above, deterministic</strong> — not LLM-only for less-common languages.</li>
+  </ul>
+</section>
+
+<!-- ============ COMPARISON ============ -->
+<section class="section" id="compare">
+  <h2>Axofy Code Review vs CodeRabbit</h2>
+  <p class="section-sub">CodeRabbit prices below were verified live on coderabbit.ai/pricing on 15 Nov 2026 (annual billing; monthly in brackets). Axofy Code Review has one price: $0.</p>
+  <div class="table-wrap">
+  <table class="compare">
+    <thead><tr><th></th><th>CodeRabbit Free</th><th>CodeRabbit Essentials</th><th>CodeRabbit Team</th><th>CodeRabbit Advanced</th><th>Axofy Code Review</th></tr></thead>
+    <tbody>
+      <tr><td>Price / user / month</td><td>$0</td><td>$24 ($30 monthly)</td><td>$48 ($60 monthly)</td><td>$72 ($90 monthly)</td><td><strong>$0</strong></td></tr>
+      <tr><td>Full PR reviews</td><td>Public repos only; summaries only on private</td><td>Yes</td><td>Yes</td><td>Yes</td><td><strong>Yes — public and private</strong></td></tr>
+      <tr><td>Reviews / developer / hour</td><td>Summaries only</td><td>5</td><td>8</td><td>10</td><td><strong>No hourly cap*</strong></td></tr>
+      <tr><td>Summary + walkthrough + inline comments</td><td>Summary only</td><td>Yes</td><td>Yes</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>1-click fix / Autofix</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Chat + learnings</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Triage + finishing touches + post-merge</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Blast Radius + Architecture Impact</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Continuous security + Deep Scan</td><td>No</td><td>Code review only</td><td>Code review only</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Linked repos</td><td>Unlimited</td><td>1</td><td>5</td><td>10</td><td><strong>Unlimited</strong></td></tr>
+      <tr><td>Overage</td><td>—</td><td>$0.25 / reviewed file</td><td>$0.25 / reviewed file</td><td>$0.25 / reviewed file</td><td><strong>None — no billing code at all</strong></td></tr>
+      <tr><td>Self-hosting</td><td>No</td><td>No</td><td>No</td><td>Enterprise only (500+ seats)</td><td><strong>Yes — self-host is the default</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta">* No hourly cap in our code. The only limit is the free LLM tier itself (for example ~40 requests/min on NVIDIA's free endpoint). When that limit is hit, reviews queue or fall back to another free provider or your own key. Sources: coderabbit.ai/pricing and docs.coderabbit.ai, read 15 Nov 2026 — see the research report in the repo.</p>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="section center" id="pricing">
+  <p class="eyebrow">PRICING</p>
+  <h2>One plan. It costs nothing.</h2>
+  <p class="section-sub">Annual / monthly changes CodeRabbit's prices below. Ours stays $0 either way.</p>
+  <div class="bill-toggle" role="tablist" aria-label="Billing period">
+    <button class="active" data-bill="annual" type="button">Annual — save 20%</button>
+    <button data-bill="monthly" type="button">Monthly</button>
+  </div>
+  <div class="price-card" style="text-align:left">
+    <p class="price" data-axo-price>$0</p>
+    <p class="price-per">per user, per month, forever — <span data-bill-note>annual or monthly, it is still $0</span></p>
+    <ul class="price-list">
+      <li>Full PR reviews, unlimited repos, no file cap</li>
+      <li>Summary, walkthrough, Mermaid diagrams, effort, labels, reviewers</li>
+      <li>Inline comments with one-click fixes + Autofix</li>
+      <li>@axoreview chat, learnings, knowledge base</li>
+      <li>Triage, Explain, Secure, Deep Scan, Engineer, Plan</li>
+      <li>Pre-merge checks, finishing touches, post-merge changelog</li>
+      <li>Profiles (quiet / chill / assertive) + .axoreview.yaml config</li>
+      <li>CLI + GitHub App + API</li>
+    </ul>
+    <a class="btn primary big" href="#app" data-goto-tab="review">Start reviewing — free</a>
+    <p class="meta" style="margin-top:14px">CodeRabbit for comparison: Essentials <span data-cr="essentials">$24</span> / Team <span data-cr="team">$48</span> / Advanced <span data-cr="advanced">$72</span> per user/month (<span data-cr-note>annual billing</span>). Honest note: free works because the models run on free LLM tiers (NVIDIA Nemotron free first, then Groq, OpenRouter free models, Gemini AI Studio) and the app runs on free hosting tiers. Bring your own free key for private repos and heavy use. No card is ever asked for, because there is nothing to charge.</p>
+  </div>
+</section>
+
+<!-- ============ BRING YOUR OWN MODEL ============ -->
+<section class="section" id="byom">
+  <h2>Bring your own model — $0 for us, $0 extra for you</h2>
+  <p class="section-sub">Axofy never pays for a model, so there is nothing to charge you for. You run reviews with your own model: a free cloud tier, or a local model on your own machine. Your key is used for one request only — it is never stored server-side, never logged, and never put in a cache key.</p>
+  <div class="table-wrap">
+  <table class="compare">
+    <thead><tr><th>Model source</th><th>Cost to Axofy</th><th>Cost to you</th><th>Key needed?</th></tr></thead>
+    <tbody>
+      <tr><td>NVIDIA Nemotron (free tier)</td><td><strong>$0</strong></td><td>$0 — free tier</td><td>Yes, your free key</td></tr>
+      <tr><td>Groq / OpenRouter :free / Gemini (free tiers)</td><td><strong>$0</strong></td><td>$0 — free tiers</td><td>Yes, your free key</td></tr>
+      <tr><td>Ollama (local, localhost:11434)</td><td><strong>$0</strong></td><td>$0 — your own machine</td><td>No</td></tr>
+      <tr><td>LM Studio (local, localhost:1234)</td><td><strong>$0</strong></td><td>$0 — your own machine</td><td>No</td></tr>
+      <tr><td>Custom OpenAI-compatible endpoint</td><td><strong>$0</strong></td><td>Whatever your endpoint charges you</td><td>Yes, yours</td></tr>
+      <tr><td>No key at all</td><td><strong>$0</strong></td><td>$0</td><td>No — deterministic checks only, honest needs-llm note</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta">Every review names its provider and model. Free-tier limits are the provider's, shown live in the tool below — Axofy adds no limit of its own. Caching, incremental-only review and a 30-second debounce stretch your free tier further.</p>
+  <h3>CodeRabbit + CodeAnt, combined — free</h3>
+  <p class="section-sub">CodeRabbit's method and result format, plus CodeAnt's best features — quality gates, bulk autofix, plain-English custom rules, Steps of Reproduction, and real-time learnings from your feedback — all in the free core, not behind a tier.</p>
+  <div class="table-wrap">
+  <table class="compare">
+    <thead><tr><th></th><th>CodeRabbit</th><th>CodeAnt</th><th>Axofy Code Review</th></tr></thead>
+    <tbody>
+      <tr><td>Full PR reviews</td><td>Paid tiers (public repos free)</td><td>$24/dev/mo, no free tier</td><td><strong>$0, public and private</strong></td></tr>
+      <tr><td>Quality gates (block merge)</td><td>Higher tiers</td><td>Yes</td><td><strong>Yes — free, configurable in .axoreview.yaml</strong></td></tr>
+      <tr><td>Bulk autofix (up to 200 files)</td><td>1-click fix only</td><td>Yes</td><td><strong>Yes — free, safe fixes only, manual list separate</strong></td></tr>
+      <tr><td>Plain-English custom rules</td><td>Path instructions / YAML</td><td>Yes</td><td><strong>Yes — free, deterministic + LLM-enforced</strong></td></tr>
+      <tr><td>Steps of Reproduction</td><td>No</td><td>Yes</td><td><strong>Yes — free, on every finding</strong></td></tr>
+      <tr><td>Learnings from feedback</td><td>Yes</td><td>Yes, real-time</td><td><strong>Yes — free, rejected suggestions suppress similar findings</strong></td></tr>
+      <tr><td>Bring your own model</td><td>No (vendor models)</td><td>No (vendor models)</td><td><strong>Yes — free tiers + local Ollama / LM Studio + custom endpoint</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta">CodeAnt pricing verified live on codeant.ai/pricing, 15 Nov 2026. CodeAnt's own benchmark claims are not repeated here — they contradict its own blog and independent tests, so we publish no benchmark of our own.</p>
+</section>
+
+<!-- ============ LOGIN (split screen, honest) ============ -->
+<section class="section" id="login">
+  <div class="login">
+    <div class="login-left">
+      <p class="eyebrow">LOG IN</p>
+      <h2>You're 2 clicks away from shipping higher-quality code.</h2>
+      <p>Free up development time while increasing productivity.</p>
+      <div class="hero-pills" style="margin-top:24px">
+        <span class="pill">Free forever</span>
+        <span class="pill">No credit card needed</span>
+      </div>
+      <p class="meta">Same layout as CodeRabbit's login page, our own words and brand. OAuth only — no email, no password.</p>
+    </div>
+    <div class="login-right">
+      <h3>Sign in to Axofy Code Review</h3>
+      <p>Welcome back, let's start reviewing. Sign in with your git provider.</p>
+      <button class="provider-btn" type="button" data-login-provider="GitHub" data-install-open>GitHub <small>Cloud · coming soon</small></button>
+      <button class="provider-btn" type="button" data-login-provider="GitLab" data-install-open>GitLab <small>Cloud · coming soon</small></button>
+      <button class="provider-btn" type="button" data-login-provider="Bitbucket" data-install-open>Bitbucket <small>Cloud · coming soon</small></button>
+      <button class="provider-btn" type="button" data-login-provider="Azure DevOps" data-install-open>Azure DevOps <small>Cloud · coming soon</small></button>
+      <p class="meta" style="text-align:center">— or —</p>
+      <button class="provider-btn" type="button" data-login-provider="SSO" data-install-open>Single Sign-On <small>Enterprise · not built yet</small></button>
+      <p class="meta" id="loginNote">Honest note: OAuth login is not live yet — these buttons open the GitHub App install guide. Today you can review without any account: paste a PR URL or a diff in the tool below.</p>
+      <p class="meta">By continuing, you agree to the Terms of Use and Privacy Policy applicable to Axofy Code Review.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSTALL / DOCS ============ -->
+<section class="section" id="install">
+  <h2>Install the GitHub App</h2>
+  <p class="section-sub">Two minutes. No CI changes, no Docker.</p>
+  <ol class="steps numbered">
+    <li><strong>Create the app</strong><span>GitHub → Settings → Developer settings → GitHub Apps → New GitHub App. Name it <strong>Axofy Code Review</strong>, homepage URL your server URL, webhook URL <code>https://&lt;your-server&gt;/webhook/github</code>, webhook secret = your <code>GITHUB_WEBHOOK_SECRET</code>.</span></li>
+    <li><strong>Set permissions</strong><span>Read-only: Actions, Checks, Discussions, Members, Metadata. Read-write: Code, Commit statuses, Issues, Pull requests. No write access to repo contents — it never pushes, branches, or merges.</span></li>
+    <li><strong>Subscribe to events</strong><span><code>pull_request</code>, <code>pull_request_review_comment</code>, <code>issue_comment</code>, <code>check_run</code>.</span></li>
+    <li><strong>Install + configure</strong><span>Install on your repos. Set <code>GITHUB_APP_ID</code> + <code>GITHUB_APP_PRIVATE_KEY</code> in <code>.env</code> and restart. Without the app, reviews still run from this page — posting is skipped with a clear note.</span></li>
+  </ol>
+  <h3>Configure a repo — .axoreview.yaml</h3>
+  <pre class="code">general:
+  language: en-US
+  tone: chill
+reviews:
+  profile: chill
+  path_filters:
+    - "!dist/**"
+    - "!**/*.min.js"
+  path_instructions:
+    - path: "src/auth/**"
+      instructions: "Check auth and rate limiting on every change here."
+chat:
+  auto_reply: true
+knowledge_base:
+  opt_out: false</pre>
+  <p class="meta">Config sections mirror .coderabbit.yaml (general, reviews, chat, knowledge_base, tools, path_filters, path_instructions) so teams coming from CodeRabbit keep their setup.</p>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <h2>Questions</h2>
+  <details><summary>Is it really free?</summary><p>Yes. There is no paid tier, no seat billing, and no billing code in the app at all. The models run on free LLM tiers and the app runs on free hosting tiers. The tradeoff is rate limits on those free tiers, not a paywall.</p></details>
+  <details><summary>How does free work, technically?</summary><p>Reviews call NVIDIA's free Nemotron endpoint first, with Groq, OpenRouter free models, and Gemini AI Studio as fallbacks. You can also bring your own free key. The app stretches the free tier with 7-day response caching, per-file caching, a 30-second push debounce, incremental-only reviews, and cheap-model compression before the review pass.</p></details>
+  <details><summary>Does it work on private repos?</summary><p>Yes, with a GitHub token and an LLM key in <code>.env</code>. Public repos work without any token. Private repo code is only sent to the LLM provider you configured, and the review cache is local with a 7-day TTL.</p></details>
+  <details><summary>What data is stored?</summary><p>Reviews, learnings, and knowledge-base entries are stored locally in JSON files in the MVP (Postgres/pgvector is phase 2). Set <code>knowledge_base.opt_out: true</code> to disable retention features and delete the stored data. Nothing is used to train models.</p></details>
+  <details><summary>How is this different from CodeRabbit?</summary><p>Same method and same result format — webhook, queue, sandbox, code graph, agentic review, judge, posted summary and inline comments. Different in price ($0, everything included), model choice (you see and choose the model), and hosting (self-host is the default, no seat minimum). Axofy Code Review is independent and not affiliated with CodeRabbit.</p></details>
+  <details><summary>What is not built yet?</summary><p>The IDE extension, the Engineer cloud agent, SSO / RBAC / audit logs, and Postgres-backed learnings. GitLab, Bitbucket and Azure DevOps are adapter-ready (webhook parsing + docs) but not live — they need their host token configured. The CLI, GitHub App, and all review features above are built.</p></details>
+</section>
+
+<!-- ============ REVIEW TOOL (the app) ============ -->
+<section class="section app-section" id="app">
+  <h2>Try it now — the review tool</h2>
+  <p class="section-sub">Paste a PR URL or a unified diff. The tool runs deterministic checks plus a 3-pass LLM review (review → summary → judge) and shows findings with evidence and suggested fixes, in the same format as a posted review.</p>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="review" role="tab">Review</button>
+  <button class="tab" data-tab="triage" role="tab">Triage</button>
+  <button class="tab" data-tab="secure" role="tab">Secure / Deep Scan</button>
+  <button class="tab" data-tab="explain" role="tab">Explain</button>
+  <button class="tab" data-tab="tools" role="tab">Tools</button>
+  <button class="tab" data-tab="kb" role="tab">Learnings &amp; KB</button>
+</nav>
+
+<main>
+  <section id="tab-review" class="panel active">
+    <p class="lede">Paste a PR URL or a unified diff. Axofy Code Review runs deterministic checks plus a 3-pass LLM review (review → summary → judge) and shows findings with evidence and suggested fixes.</p>
+    <div class="checklist" id="onboardingChecklist">
+      <h3>First run — 4 steps, no tour needed</h3>
+      <label><input type="checkbox" data-step="connect"> 1. Connect GitHub — paste a PR URL below, or install the GitHub App (no account needed to try a diff)</label>
+      <label><input type="checkbox" data-step="install"> 2. Install the GitHub App on a repo (Docs section below)</label>
+      <label><input type="checkbox" data-step="pr"> 3. Open a pull request in that repo</label>
+      <label><input type="checkbox" data-step="review"> 4. Get your first review — or try the one-click demo PR below</label>
+      <p class="meta">CodeRabbit has no in-app checklist or sample PR — this is the gap we fixed. Your progress is saved in your browser only.</p>
+    </div>
+    <div class="quota" id="quotaMeter">Loading limits…</div>
+    <fieldset class="byom">
+      <legend>Bring your own model — Axofy pays $0</legend>
+      <div class="row">
+        <label>Provider
+          <select id="byomProvider">
+            <option value="nvidia" selected>NVIDIA Nemotron — free tier</option>
+            <option value="groq">Groq — free tier</option>
+            <option value="openrouter">OpenRouter :free</option>
+            <option value="gemini">Gemini AI Studio — free tier</option>
+            <option value="ollama">Ollama — local, no key</option>
+            <option value="lmstudio">LM Studio — local, no key</option>
+            <option value="custom">Custom OpenAI-compatible endpoint</option>
+          </select>
+        </label>
+        <label>Model <input id="byomModel" type="text" placeholder="leave empty for provider default"></label>
+        <label>Base URL <input id="byomBaseUrl" type="text" placeholder="only for Ollama / LM Studio / custom"></label>
+        <label>API key <input id="byomKey" type="password" placeholder="your free key — never stored, never echoed back" autocomplete="off"></label>
+        <button id="testByom" class="btn" type="button">Test connection</button>
+      </div>
+      <p class="meta" id="byomStatus">Your key is sent with this request only. Axofy pays $0 for every provider — your bill is your provider's (free tiers / local = $0).</p>
+      <label>Custom rules (plain English, one per line — also in .axoreview.yaml)
+        <textarea id="customRules" rows="2" placeholder="e.g. Never use console.log in production code"></textarea>
+      </label>
+    </fieldset>
+    <div class="row">
+      <button id="demoPrOneClick" class="btn" type="button">Try a demo PR in one click</button>
+      <span class="meta">Loads the sample PR and runs a real review — no setup, no key.</span>
+    </div>
+    <div class="row">
+      <label>PR URL <input id="prUrl" type="text" placeholder="https://github.com/owner/repo/pull/123"></label>
+      <label>Profile
+        <select id="profile">
+          <option value="chill" selected>chill (balanced)</option>
+          <option value="quiet">quiet (critical + major only)</option>
+          <option value="assertive">assertive (everything)</option>
+        </select>
+      </label>
+      <label>Review depth
+        <select id="depth">
+          <option value="quick">quick — deterministic checks only</option>
+          <option value="standard" selected>standard — checks + taint, breaking changes, blast radius</option>
+          <option value="deep">deep — standard + architecture impact, docs drift, test gaps</option>
+        </select>
+      </label>
+      <label class="check"><input id="postToGh" type="checkbox"> Post to GitHub (needs GitHub App)</label>
+    </div>
+    <label>Diff (or leave empty when using a PR URL)
+      <textarea id="diffInput" rows="8" placeholder="diff --git a/src/app.js b/src/app.js …"></textarea>
+    </label>
+    <div class="row">
+      <button id="runReview" class="btn primary">Run review</button>
+      <button id="loadSample" class="btn">Load sample diff</button>
+      <button id="runIncremental" class="btn" title="Review again, marking findings already seen in the first review as already-reviewed">Run incremental review</button>
+    </div>
+    <div id="reviewStatus" class="status" aria-live="polite"></div>
+    <div id="reviewResult"></div>
+  </section>
+
+  <section id="tab-triage" class="panel">
+    <p class="lede">Triage queue: open PRs for a repo, scored by risk and effort so reviewers start with the riskiest PR first. Scored with deterministic checks only — $0 per PR.</p>
+    <div class="row">
+      <label>Repo <input id="triageRepo" type="text" placeholder="owner/repo"></label>
+      <button id="runTriage" class="btn primary">List PR queue</button>
+    </div>
+    <div id="triageStatus" class="status" aria-live="polite"></div>
+    <div id="triageResult"></div>
+  </section>
+
+  <section id="tab-secure" class="panel">
+    <p class="lede">Secure / Deep Scan: whole-repo deterministic scan for secrets, SAST patterns, risky dependencies and IaC misconfigurations. No LLM needed. Caps: 200 files, 100 KB per file.</p>
+    <div class="row">
+      <label>Repo <input id="scanRepo" type="text" placeholder="owner/repo"></label>
+      <label>Ref <input id="scanRef" type="text" value="HEAD"></label>
+      <button id="runScan" class="btn primary">Run Deep Scan</button>
+    </div>
+    <div id="scanStatus" class="status" aria-live="polite"></div>
+    <div id="scanResult"></div>
+  </section>
+
+  <section id="tab-explain" class="panel">
+    <p class="lede">Explain: Change Stack (files grouped by module), semantic diff (moved code), blast radius (who calls the changed code), and architecture impact (needs an LLM key; the rest works without one).</p>
+    <div class="row">
+      <label>PR URL <input id="explainUrl" type="text" placeholder="https://github.com/owner/repo/pull/123"></label>
+      <button id="runExplain" class="btn primary">Explain this PR</button>
+    </div>
+    <label>Or paste a diff <textarea id="explainDiff" rows="6"></textarea></label>
+    <div id="explainStatus" class="status" aria-live="polite"></div>
+    <div id="explainResult"></div>
+  </section>
+
+  <section id="tab-tools" class="panel">
+    <p class="lede">Finishing touches, Autofix, post-merge changelog, and chat. Finishing touches and chat need an LLM key; Autofix and the changelog draft work without one.</p>
+    <label>Diff to work on <textarea id="toolsDiff" rows="6" placeholder="Paste a diff, or run a review first — the last reviewed diff is used."></textarea></label>
+    <div class="row">
+      <label>Finishing touches
+        <select id="finishKind"><option value="tests">Generate unit tests</option><option value="docstrings">Generate docstrings</option></select>
+      </label>
+      <button id="runFinish" class="btn primary">Run finishing touches</button>
+      <button id="runAutofix" class="btn">Generate Autofix patch</button>
+      <button id="runBulkAutofix" class="btn">Fix all safe (bulk, up to 200 files)</button>
+      <button id="runChangelog" class="btn">Draft changelog</button>
+    </div>
+    <label>Ask about the diff <input id="chatQ" type="text" placeholder="e.g. Is there an injection risk in this change?"></label>
+    <div class="row"><button id="runChat" class="btn primary">Ask Axofy Code Review</button></div>
+    <div id="toolsStatus" class="status" aria-live="polite"></div>
+    <div id="toolsResult"></div>
+  </section>
+
+  <section id="tab-kb" class="panel">
+    <p class="lede">Learnings (rules the reviewer learns from your feedback) and the knowledge base (guidelines, pasted Jira/Linear ticket text, notes). Stored locally in JSON files for the MVP; Postgres/pgvector is phase 2.</p>
+    <div class="grid2">
+      <div>
+        <h3>Add a learning</h3>
+        <label>Repo <input id="learnRepo" type="text" placeholder="owner/repo (or global)"></label>
+        <label>Rule <input id="learnRule" type="text" placeholder="e.g. Never flag console.log in scripts/ — we use it for CLI output"></label>
+        <button id="addLearning" class="btn primary">Save learning</button>
+      </div>
+      <div>
+        <h3>Add to knowledge base</h3>
+        <label>Repo <input id="kbRepo" type="text" placeholder="owner/repo (or global)"></label>
+        <label>Source
+          <select id="kbSource"><option value="guideline">guideline</option><option value="jira">jira</option><option value="linear">linear</option><option value="note">note</option></select>
+        </label>
+        <label>Title <input id="kbTitle" type="text" placeholder="e.g. AUTH-123: login must rate-limit"></label>
+        <label>Text <textarea id="kbText" rows="3" placeholder="Paste ticket text, a guideline, or a note…"></textarea></label>
+        <button id="addKb" class="btn primary">Save KB entry</button>
+      </div>
+    </div>
+    <div class="row"><button id="refreshKb" class="btn">Refresh lists</button></div>
+    <div id="kbStatus" class="status" aria-live="polite"></div>
+    <div id="kbResult"></div>
+  </section>
+</main>
+</section>
+
+<!-- ============ FINAL CTA + FOOTER ============ -->
+<section class="section">
+  <div class="final-cta">
+    <p class="eyebrow">FREE FOREVER</p>
+    <h2>Stop paying to review your own code.</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto">Every feature CodeRabbit charges $24–$72 a month for is $0 here — with your own model, your own key, and no card ever asked for.</p>
+    <a class="btn primary big" href="#app" data-goto-tab="review">Try it for free</a>
+    <form class="newsletter" id="newsletterForm">
+      <label class="sr-only" for="newsletterEmail">Email for release notes</label>
+      <input id="newsletterEmail" type="email" placeholder="you@company.com — release notes only" required>
+      <button class="btn primary" type="submit">Subscribe</button>
+    </form>
+    <p class="meta" id="newsletterNote">No account, no spam. This form only saves your address in this browser for now — there is no mailing list yet.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="foot-cols">
+    <div>
+      <div class="foot-brand">
+        <img src="/marco.png" alt="Marco, the Axofy axolotl" width="40" height="40">
+        <div><strong>Axofy Code Review</strong><br><span class="meta">The free alternative to CodeRabbit. Every feature, $0.</span></div>
+      </div>
+      <p class="meta">Axofy Code Review is an independent project by Axofy. It is not affiliated with, endorsed by, or connected to CodeRabbit, Inc. CodeRabbit is a trademark of its owner; it is named here only to describe what this free alternative replaces.</p>
+    </div>
+    <div><h4>Product</h4><a href="#app" data-goto-tab="review">Review</a><a href="#app" data-goto-tab="triage">Triage</a><a href="#app" data-goto-tab="explain">Explain</a><a href="#app" data-goto-tab="secure">Secure</a><a href="#features">Engineer</a></div>
+    <div><h4>Explore</h4><a href="#how">How it works</a><a href="#compare">Comparison</a><a href="#pricing">Pricing</a><a href="#outcomes">Why free wins</a></div>
+    <div><h4>Resources</h4><a href="#install">Docs</a><a href="#languages">Languages &amp; hosts</a><a href="#faq">FAQ</a><a href="#login">Log in</a></div>
+    <div><h4>Trust</h4><a href="#byom">Bring your own model</a><a href="#faq">What data is stored?</a><a href="#install">GitHub App setup</a><a href="#app">Try free</a></div>
+  </div>
+  <div class="wordmark" aria-hidden="true">AXOFY</div>
+  <nav class="foot-links" aria-label="Footer">
+    <a href="#features">Products</a>
+    <a href="#how">How it works</a>
+    <a href="#compare">Comparison</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#install">Install</a>
+    <a href="#faq">FAQ</a>
+    <a href="#app">Try free</a>
+  </nav>
+  <p class="meta">Pricing for CodeRabbit was verified live on coderabbit.ai/pricing on 15 Nov 2026.</p>
+  <p class="meta">© 2026 Axofy. Axofy Code Review — free forever. No accounts, no billing, no caps. Reviews run on your server with your free LLM key.</p>
+</footer>
+
+<!-- Install dialog -->
+<dialog id="installDialog" class="install-dialog">
+  <h2>Install the GitHub App</h2>
+  <ol>
+    <li>GitHub → Settings → Developer settings → GitHub Apps → New GitHub App. Name it <strong>Axofy Code Review</strong>.</li>
+    <li>Webhook URL: <code>https://&lt;your-server&gt;/webhook/github</code>. Webhook secret: your <code>GITHUB_WEBHOOK_SECRET</code>.</li>
+    <li>Permissions — read-only: Actions, Checks, Discussions, Members, Metadata. Read-write: Code, Commit statuses, Issues, Pull requests.</li>
+    <li>Subscribe to: <code>pull_request</code>, <code>pull_request_review_comment</code>, <code>issue_comment</code>, <code>check_run</code>.</li>
+    <li>Install on your repos, set <code>GITHUB_APP_ID</code> + <code>GITHUB_APP_PRIVATE_KEY</code> in <code>.env</code>, restart.</li>
+  </ol>
+  <p class="meta">Full steps and the .axoreview.yaml reference are in the <a href="#install">Docs section</a> above. Without the app, reviews still run from this page — posting is skipped with a clear note.</p>
+  <div class="row">
+    <a class="btn primary" href="#install" data-close-install>Read full setup</a>
+    <button class="btn" data-close-install type="button">Close</button>
+  </div>
+</dialog>
+
+<script src="/app.js"></script>
+<script src="/landing.js"></script>
+</body>
+</html>

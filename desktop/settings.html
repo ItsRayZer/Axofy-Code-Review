@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axofy Code Review — Settings</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #F5F3FF; color: #1e1b2e; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #6b6580; margin: 0 0 20px; font-size: 14px; line-height: 1.5; }
+  label { display: block; font-weight: 600; font-size: 13px; margin: 16px 0 6px; }
+  .hint { font-weight: 400; color: #6b6580; font-size: 12px; display: block; margin-top: 4px; line-height: 1.45; }
+  select, input[type="password"], input[type="text"] { width: 100%; padding: 9px 10px; border: 1px solid #d9d4f0; border-radius: 8px; font-size: 14px; background: #fff; }
+  select:focus, input:focus { outline: 2px solid #7C3AED; outline-offset: 1px; }
+  .row { display: flex; gap: 10px; margin-top: 24px; }
+  button { padding: 10px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1px solid #d9d4f0; background: #fff; }
+  button.primary { background: #7C3AED; color: #fff; border-color: #7C3AED; font-weight: 600; }
+  button.danger { color: #b3261e; }
+  button:disabled { opacity: .55; cursor: default; }
+  .status { margin-top: 16px; font-size: 13px; min-height: 18px; }
+  .status.ok { color: #1a7f37; }
+  .status.err { color: #b3261e; }
+  .free-note { background: #ede9fe; border: 1px solid #ddd6fe; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.55; margin-top: 20px; }
+  .set { color: #1a7f37; font-size: 12px; font-weight: 600; }
+  a { color: #7C3AED; }
+</style>
+</head>
+<body>
+  <h1>Settings</h1>
+  <p class="sub">Your keys are stored only on this computer (in the app's user data folder). They are never uploaded, logged, or put in code. Leave a field blank to keep the key already saved.</p>
+
+  <form id="settings-form">
+    <label for="provider">LLM provider (free tier first)
+      <select id="provider" name="provider">
+        <option value="nvidia">NVIDIA Nemotron 3 Ultra — free endpoint (recommended)</option>
+        <option value="groq">Groq — free tier</option>
+        <option value="openrouter">OpenRouter — free models (:free)</option>
+        <option value="gemini">Gemini AI Studio — free tier</option>
+      </select>
+      <span class="hint">The provider above is used first. No key at all still works: deterministic checks, Triage, Deep Scan and Autofix run, and LLM features honestly say "needs-llm".</span>
+    </label>
+
+    <label for="nvidia">NVIDIA API key <span class="set" id="set-nvidia"></span>
+      <input type="password" id="nvidia" autocomplete="off" placeholder="nvapi-… (leave blank to keep)">
+      <span class="hint">Get one free at <a href="#" data-ext="https://build.nvidia.com">build.nvidia.com</a> — no card. Free tier is about 40 requests/min.</span>
+    </label>
+
+    <label for="groq">Groq API key <span class="set" id="set-groq"></span>
+      <input type="password" id="groq" autocomplete="off" placeholder="gsk_… (leave blank to keep)">
+      <span class="hint">Free tier at <a href="#" data-ext="https://console.groq.com">console.groq.com</a>.</span>
+    </label>
+
+    <label for="openrouter">OpenRouter API key <span class="set" id="set-openrouter"></span>
+      <input type="password" id="openrouter" autocomplete="off" placeholder="sk-or-… (leave blank to keep)">
+      <span class="hint">Free models at <a href="#" data-ext="https://openrouter.ai">openrouter.ai</a> — use the :free models.</span>
+    </label>
+
+    <label for="gemini">Gemini API key <span class="set" id="set-gemini"></span>
+      <input type="password" id="gemini" autocomplete="off" placeholder="AIza… (leave blank to keep)">
+      <span class="hint">Free tier at <a href="#" data-ext="https://aistudio.google.com">Google AI Studio</a>.</span>
+    </label>
+
+    <label for="repo">GitHub repo for update checks
+      <input type="text" id="repo" autocomplete="off" placeholder="ItsRayZer/axoreview">
+      <span class="hint">Used only to check GitHub Releases for a newer version. Nothing is downloaded automatically.</span>
+    </label>
+
+    <div class="row">
+      <button type="submit" class="primary" id="save">Save &amp; restart server</button>
+      <button type="button" id="clear">Remove all keys</button>
+      <button type="button" id="close">Close</button>
+    </div>
+    <p class="status" id="status" role="status"></p>
+  </form>
+
+  <div class="free-note"><strong>How free works:</strong> the review runs on your computer. The AI call goes to the free tier of the provider you pick — NVIDIA, Groq, OpenRouter or Gemini pay for that compute as a free tier. If the free tier is busy, reviews queue or fall back to the next free provider. Bringing your own free key (BYOK) means Axofy never pays for your reviews, and you never pay Axofy.</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const api = window.axoreviewDesktop;
+  const statusEl = $('status');
+
+  function setStatus(msg, ok) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status ' + (ok ? 'ok' : 'err');
+  }
+
+  document.querySelectorAll('[data-ext]').forEach((a) => {
+    a.addEventListener('click', (e) => { e.preventDefault(); api.openExternal(a.dataset.ext); });
+  });
+
+  async function load() {
+    if (!api) { setStatus('Desktop bridge not available.', false); return; }
+    const s = await api.getSettings();
+    $('provider').value = s.llmProvider || 'nvidia';
+    $('repo').value = s.githubRepo || '';
+    const map = { NVIDIA_API_KEY: 'set-nvidia', GROQ_API_KEY: 'set-groq', OPENROUTER_API_KEY: 'set-openrouter', GEMINI_API_KEY: 'set-gemini' };
+    for (const [key, id] of Object.entries(map)) {
+      $(id).textContent = s.hasKeys && s.hasKeys[key] ? '✓ key saved' : '';
+    }
+  }
+
+  $('settings-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('save').disabled = true;
+    setStatus('Saving and restarting the local server…', true);
+    try {
+      await api.saveSettings({
+        llmProvider: $('provider').value,
+        githubRepo: $('repo').value,
+        keys: {
+          NVIDIA_API_KEY: $('nvidia').value,
+          GROQ_API_KEY: $('groq').value,
+          OPENROUTER_API_KEY: $('openrouter').value,
+          GEMINI_API_KEY: $('gemini').value,
+        },
+      });
+      setStatus('Saved. The server restarted with the new settings.', true);
+      load();
+    } catch (err) {
+      setStatus('Could not save settings: ' + err.message, false);
+    }
+    $('save').disabled = false;
+  });
+
+  $('clear').addEventListener('click', async () => {
+    if (!confirm('Remove all saved LLM keys from this computer?')) return;
+    await api.clearKeys();
+    ['nvidia', 'groq', 'openrouter', 'gemini'].forEach((id) => { $(id).value = ''; });
+    load();
+    setStatus('All keys removed.', true);
+  });
+
+  $('close').addEventListener('click', () => api.closeSettings());
+  load();
+</script>
+</body>
+</html>

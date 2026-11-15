@@ -1,0 +1,11 @@
+diff --git a/migrations/0002_cleanup.sql b/migrations/0002_cleanup.sql
+index 1111111..2222222 100644
+--- a/migrations/0002_cleanup.sql
++++ b/migrations/0002_cleanup.sql
+@@ -1,3 +1,6 @@
+ -- migration: clean up old users
++
++-- Planted bug: DELETE without WHERE deletes every row
++DELETE FROM users;
++-- Planted bug: DROP TABLE destroys data
++DROP TABLE old_sessions;

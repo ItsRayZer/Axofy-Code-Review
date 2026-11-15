@@ -1,0 +1,18 @@
+diff --git a/src/users.php b/src/users.php
+index 1111111..2222222 100644
+--- a/src/users.php
++++ b/src/users.php
+@@ -1,3 +1,12 @@
+ <?php
+ 
++function getUser($conn) {
++    // Planted bug: SQL concatenated with $_GET
++    $q = "SELECT * FROM users WHERE id = " . $_GET['id'];
++    $res = mysqli_query($conn, $q);
++    // Planted bug: eval on user input
++    $filter = eval($_GET['filter']);
++    var_dump($res);
++    return $filter;
++}
++
+ ?>

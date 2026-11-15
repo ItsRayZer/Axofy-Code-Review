@@ -1,0 +1,75 @@
+# Build the Axofy Code Review Windows installer on Windows.
+# Place this file at the REPO ROOT as .github/workflows/build-windows.yml
+# (it lives in desktop/.github/workflows/ in the workspace until push).
+# Trigger: push a tag like v1.0.0, or run it manually from the Actions tab.
+# Produces the real .exe (NSIS installer + portable) — Linux cannot build
+# NSIS without Wine, so the .exe is ONLY built here, never faked locally.
+name: Build Windows installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: axoreview/desktop/package-lock.json
+
+      - name: Run web-app tests (must stay green)
+        working-directory: axoreview
+        run: npm test
+
+      - name: Install desktop dependencies
+        working-directory: axoreview/desktop
+        run: npm ci
+
+      - name: Build Windows installer + portable exe
+        working-directory: axoreview/desktop
+        run: npm run dist:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checksums
+        working-directory: axoreview/desktop/dist
+        shell: pwsh
+        run: |
+          Get-ChildItem *.exe | ForEach-Object {
+            (Get-FileHash $_.FullName -Algorithm SHA256).Hash + '  ' + $_.Name
+          } | Out-File -Encoding utf8 SHA256SUMS.txt
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: |
+            axoreview/desktop/dist/*.exe
+            axoreview/desktop/dist/SHA256SUMS.txt
+
+      # Only on a version tag: publish the installer in GitHub Releases.
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            axoreview/desktop/dist/*.exe
+            axoreview/desktop/dist/SHA256SUMS.txt
+          body: |
+            Axofy Code Review ${{ github.ref_name }} — free AI code review, the free alternative to CodeRabbit.
+
+            Download **Axofy-Code-Review-Setup-${{ github.ref_name }}.exe** and run it. No account, no card, no seat billing — reviews run on your computer with free LLM tiers (bring your own free key in Settings).
+
+            Not code-signed yet: Windows SmartScreen will warn on first install ("Windows protected your PC" → More info → Run anyway). Signing needs a paid certificate.
+          fail_on_unmatched_files: true

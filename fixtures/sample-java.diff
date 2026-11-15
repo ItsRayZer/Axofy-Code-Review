@@ -1,0 +1,19 @@
+diff --git a/src/main/java/com/example/Users.java b/src/main/java/com/example/Users.java
+index 1111111..2222222 100644
+--- a/src/main/java/com/example/Users.java
++++ b/src/main/java/com/example/Users.java
+@@ -1,3 +1,13 @@
+ package com.example;
+ 
++import java.sql.Statement;
++
++public class Users {
++    // Planted bug: SQL built by concatenation
++    public void getUser(Statement st, String userId) throws Exception {
++        String q = "SELECT * FROM users WHERE id = " + userId + " AND active = 1";
++        st.executeQuery(q);
++        // Planted bug: Runtime.exec on a constructed command
++        Runtime.getRuntime().exec("cat " + userId);
++        System.out.println("debug: user lookup done");
++    }
++}
