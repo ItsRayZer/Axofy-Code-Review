@@ -92,6 +92,16 @@ states for every data view.
 
 Use what the project already has, and add Playwright for browser flows.
 
+First pass on a running app: `node scripts/crawl.mjs http://localhost:3000`
+(add `--storage state.json` for a logged-in session, `--no-click` to only
+inventory). It crawls same-origin pages, lists every link, button, and field,
+clicks safe buttons, skips destructive-looking ones (delete, pay, log out)
+unless `--allow-destructive`, and writes `report.json` and `inventory.json`
+plus screenshots. Its findings are leads: dead links, unnamed controls,
+failed clicks, console errors, failed requests, and buttons with no
+observable effect. Verify each with a real test before marking `FAIL`, and
+remember it cannot judge whether a button does the *right* thing.
+
 ```bash
 # unit/integration (examples)
 npm test | pytest -q | go test ./... -race | cargo test | mvn -q test

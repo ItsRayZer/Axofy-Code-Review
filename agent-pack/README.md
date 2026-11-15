@@ -6,6 +6,14 @@ or AI can use in one step. It reviews code the way CodeRabbit does — line
 by line, with software-engineering judgement — for $0, using the user's own
 model.
 
+**Skill v2 (15 Nov 2026):** `SKILL.md` is now "AxoReview v2: deep,
+evidence-driven code review" — intent model, line-by-line execution
+reasoning, cross-file impact, adversarial pass, self-falsification, and
+whole-app mode (`qa` / `audit app` / `harden` / `privacy`) that inventories
+and tests every element and audits security/privacy with real scanners.
+Its method files live in `references/` (copies of `methods/` in the repo)
+and its helper scripts in `scripts/`.
+
 ## The lazy-user 1-step use
 
 Paste this to your agent (Claude Code, Cursor, ChatGPT, Gemini, Copilot,
@@ -100,7 +108,9 @@ model + `axofyCostUsd: 0`.
 
 | File | What it is |
 |---|---|
-| `SKILL.md` | Portable condensed skill — drop into any agent |
+| `SKILL.md` | Portable skill v2 — drop into any agent |
+| `references/` | The 5 method files the skill reads (`deep-reasoning`, `functional-qa`, `language-pitfalls`, `security-privacy-audit`, `agent-ops`) — copies of `methods/` in the repo |
+| `scripts/` | Helper scripts the skill uses (`preflight.sh`, `crawl.mjs`) — copies of `scripts/` in the repo |
 | `README.md` | This file — how to use it in 1 step |
 | `AGENTS.md` | Snippet to paste into a repo's `AGENTS.md` |
 | `.cursorrules` | Snippet for Cursor repos |
@@ -110,19 +120,25 @@ model + `axofyCostUsd: 0`.
 | `mcp-vscode.json` | VS Code MCP config |
 | `skill.yaml` | Skill metadata (name axoreview, version) |
 
-Full skill (1,390 lines, all prompts + worked examples):
+Full skill (1,401 lines + §15 addendum, all prompts + worked examples):
 `~/workspace/custom-skills/axoreview/SKILL.md`.
 Engine: `~/workspace/axoreview/` — `lib/line-by-line.js` (line-by-line +
 SE), `lib/pipeline.js` (3-pass review), `mcp-server.js`, `bin/axoreview.js`,
 `server.js`. Tests: `npm test` in that folder (133 passed, 0 failed at
 last check — 116 suite + 17 MCP).
 
-## Review methods (`methods/` in the repo)
+## Review methods (`methods/` in the repo, copies in `references/` here)
 
 - `methods/deep-reasoning.md` — **default line-by-line protocol.** Mental model first, then a verdict on every changed line. Read it before every review.
 - `methods/language-pitfalls.md` — **per-language checks** (JS/TS, React, Node, Python, Go, Rust, Java/Kotlin, C/C++, and more). Read it when the diff touches one of those languages/platforms.
-- `methods/functional-qa.md` — **test every element.** Inventory every UI/API element in the diff, test case per element type. Use when the change is user-facing or adds behaviour.
+- `methods/functional-qa.md` — **test every element.** Inventory every UI/API element in the diff, test case per element type. Use when the change is user-facing or adds behaviour. First pass on a running app: `node scripts/crawl.mjs <url>`.
 - `methods/security-privacy-audit.md` — **security pass** (authorization/scope, threat model, scanner stack). Use when the review touches auth, data, secrets, or user input, and as a final pass before ship.
+- `methods/agent-ops.md` — **agent operations for long audits.** Preflight/capability levels, safety rules, baseline, fix loop, independent verifier, state/resume. Use for `qa` / `audit app` / `harden` runs.
+
+## Helper scripts (`scripts/` in the repo, copies in `scripts/` here)
+
+- `scripts/preflight.sh` — **run first, read-only.** Detects tools and stack, outputs JSON with the capability level (L0 read-only → L3 staging + accounts). No network, no installs.
+- `scripts/crawl.mjs` — **Playwright crawler.** Inventories and click-tests a running app (`node scripts/crawl.mjs <baseUrl>`), writes `report.json` + `inventory.json` + screenshots. Requires Playwright (`npm i -D playwright`); findings are heuristic leads, verify each before marking FAIL.
 
 ## What is NOT here (on purpose)
 
